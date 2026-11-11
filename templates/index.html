@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Landing Page Publisher - Sprint 1</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
+
+    <!-- Header Navigation -->
+    <header class="bg-indigo-600 text-white shadow-lg p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wide">🚀 AI Landing Page Publisher</h1>
+            <span class="bg-indigo-700 text-xs px-3 py-1 rounded-full border border-indigo-400">Sprint 1 - Day 2</span>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="container mx-auto max-w-4xl mt-10 p-6 bg-white rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Kiểm Tra Kết Nối Hệ Thống Local</h2>
+        <p class="text-gray-600 mb-6">Nhấn nút bên dưới để thực hiện gọi API kiểm tra từ Client tới Backend FastAPI.</p>
+
+        <!-- Call API Button -->
+        <button id="btn-test" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 shadow">
+            Gọi API /api/health
+        </button>
+
+        <!-- API Result Container -->
+        <div id="result-box" class="mt-6 hidden p-4 rounded-lg bg-slate-50 border border-slate-200">
+            <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Phản hồi từ Server:</h3>
+            <pre id="api-output" class="bg-slate-900 text-emerald-400 p-4 rounded-md text-sm overflow-x-auto font-mono"></pre>
+        </div>
+    </main>
+
+    <!-- JavaScript Fetching API -->
+    <script>
+        document.getElementById('btn-test').addEventListener('click', async () => {
+            const resultBox = document.getElementById('result-box');
+            const apiOutput = document.getElementById('api-output');
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                resultBox.classList.remove('hidden');
+                apiOutput.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultBox.classList.remove('hidden');
+                apiOutput.textContent = "Lỗi kết nối API: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

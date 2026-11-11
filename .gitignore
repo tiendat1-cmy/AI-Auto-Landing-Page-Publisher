@@ -1,0 +1,12 @@
+# Python environment & cache
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Environment variables (chứa API key, password DB)
+.env
+
+# System files
+.DS_Store
+Thumbs.db

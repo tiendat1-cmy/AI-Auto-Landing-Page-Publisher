@@ -1,12 +1,12 @@
 import pymysql
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from passlib.context import CryptContext
-from schemas.auth import UserRegisterRequest, UserRegisterResponse
+from schemas.auth import UserRegisterRequest, UserRegisterResponse, LoginRequest, UserResponse
 from core.config import settings
+from core.security import create_access_token, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-# Cấu hình mã hóa mật khẩu bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_db_connection():
@@ -21,9 +21,9 @@ def get_db_connection():
         autocommit=True
     )
 
+# 1. Đăng ký
 @router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserRegisterResponse)
 async def register_user(payload: UserRegisterRequest):
-    # 1. Kiểm tra mật khẩu tối thiểu 8 ký tự (đã được Pydantic validate, kiểm tra thêm nếu cần)
     if len(payload.password) < 8:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -33,21 +33,16 @@ async def register_user(payload: UserRegisterRequest):
     connection = get_db_connection()
     try:
         with connection.cursor() as cursor:
-            # 2. Kiểm tra email duy nhất
             cursor.execute("SELECT id FROM users WHERE email = %s", (payload.email,))
-            existing_user = cursor.fetchone()
-            
-            if existing_user:
+            if cursor.fetchone():
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="Email này đã được sử dụng trên hệ thống"
                 )
 
-            # 3. Băm mật khẩu bằng bcrypt (ép kiểu str và cắt gọn nếu cần)
             clean_pwd = str(payload.password)[:72]
             hashed_pwd = pwd_context.hash(clean_pwd)
 
-            # 4. Lưu người dùng mới vào MySQL
             insert_query = """
             INSERT INTO users (full_name, email, hashed_password)
             VALUES (%s, %s, %s)
@@ -63,3 +58,48 @@ async def register_user(payload: UserRegisterRequest):
             )
     finally:
         connection.close()
+
+# 2. Đăng nhập trả JWT access token
+@router.post("/login", status_code=status.HTTP_200_OK)
+async def login(payload: LoginRequest):
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id, email, hashed_password FROM users WHERE email = %s",
+                (payload.email,)
+            )
+            user = cursor.fetchone()
+
+            clean_pwd = str(payload.password)[:72]
+            if not user or not pwd_context.verify(clean_pwd, user["hashed_password"]):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail={
+                        "success": False,
+                        "error": {
+                            "code": "INVALID_CREDENTIALS",
+                            "message": "Email hoặc mật khẩu không chính xác",
+                            "details": []
+                        }
+                    }
+                )
+
+            access_token = create_access_token(data={"sub": str(user["id"]), "email": user["email"]})
+            return {
+                "success": True,
+                "data": {
+                    "access_token": access_token,
+                    "token_type": "bearer"
+                }
+            }
+    finally:
+        connection.close()
+
+# 3. Lấy thông tin cá nhân qua dependency dùng chung get_current_user
+@router.get("/me", status_code=status.HTTP_200_OK)
+async def get_me(current_user: dict = Depends(get_current_user)):
+    return {
+        "success": True,
+        "data": UserResponse(**current_user).model_dump()
+    }

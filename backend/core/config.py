@@ -1,4 +1,6 @@
 import os
+from urllib.parse import quote_plus
+
 from dotenv import load_dotenv
 
 # Tải biến môi trường từ file .env
@@ -17,5 +19,15 @@ class Settings:
     # Third-party API Keys
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
+
+    @property
+    def DATABASE_URL(self) -> str:
+        user = quote_plus(self.DB_USER)
+        password = quote_plus(self.DB_PASSWORD)
+        database = quote_plus(self.DB_NAME)
+        return (
+            f"mysql+pymysql://{user}:{password}@{self.DB_HOST}:{self.DB_PORT}/"
+            f"{database}?charset=utf8mb4"
+        )
 
 settings = Settings()

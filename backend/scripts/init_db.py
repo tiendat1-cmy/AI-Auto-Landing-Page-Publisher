@@ -45,7 +45,30 @@ def init_database():
             cursor.execute(create_users_table_query)
             print("Table 'users' created or already exists.")
             
-            # 3. Seed tài khoản mẫu
+            # 3. Tạo bảng project_versions (lưu lịch sử phiên bản Landing Page)
+            create_project_versions_table_query = """
+            CREATE TABLE IF NOT EXISTS project_versions (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT NOT NULL,
+                version_number INT NOT NULL,
+                json_content JSON NULL,
+                html_snapshot LONGTEXT NOT NULL,
+                commit_sha VARCHAR(40) NULL,
+                change_summary VARCHAR(255) NULL,
+                created_by INT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX ix_project_versions_project_id (project_id),
+                CONSTRAINT uq_project_version UNIQUE (project_id, version_number),
+                CONSTRAINT fk_versions_project FOREIGN KEY (project_id)
+                    REFERENCES projects(id) ON DELETE CASCADE,
+                CONSTRAINT fk_versions_user FOREIGN KEY (created_by)
+                    REFERENCES users(id) ON DELETE SET NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_project_versions_table_query)
+            print("Table 'project_versions' created or already exists.")
+
+            # 4. Seed tài khoản mẫu
             sample_users = [
                 ("Tiến Đạt (Admin)", "tiendat.admin@example.com", hash_password("Admin123@")),
                 ("Member One", "member1@example.com", hash_password("Password123!")),

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | AI Landing Page Publisher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      </div>
+      <span class="font-extrabold text-lg text-slate-900">AI PagePublisher</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="text-right hidden sm:block">
+        <p id="navUserName" class="text-sm font-bold text-slate-800">Đang tải...</p>
+        <p id="navUserEmail" class="text-xs text-slate-500">...</p>
+      </div>
+      <button onclick="handleLogout()"
+        class="px-4 py-2 text-xs font-bold bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 rounded-xl transition flex items-center gap-2">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl w-full mx-auto p-6 flex-1">
+    <div class="bg-gradient-to-r from-indigo-600 to-violet-700 rounded-2xl p-8 text-white shadow-lg mb-8">
+      <h1 class="text-2xl font-extrabold" id="welcomeBanner">Xin chào!</h1>
+      <p class="text-indigo-100 text-sm mt-1">
+        Phiên làm việc của bạn đã được xác thực an toàn bằng JWT Token. Sẵn sàng tạo Landing Page mới với AI.
+      </p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-2xl p-8 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center text-xl mb-3">
+        <i class="fa-solid fa-folder-plus"></i>
+      </div>
+      <h2 class="text-base font-bold text-slate-800">Danh sách dự án Landing Page</h2>
+      <p class="text-xs text-slate-500 mt-1">Khu vực hiển thị và quản lý các dự án sẽ được tích hợp ở Sprint tiếp theo.</p>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Kiểm tra đăng nhập ngay khi mở trang: chưa có token hoặc token sai -> tự đá về login.html
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = await requireAuth();
+      if (user) {
+        document.getElementById("navUserName").textContent = user.full_name;
+        document.getElementById("navUserEmail").textContent = user.email;
+        document.getElementById("welcomeBanner").textContent = `Chào mừng trở lại, ${user.full_name}!`;
+      }
+    });
+  </script>
+</body>
+</html>

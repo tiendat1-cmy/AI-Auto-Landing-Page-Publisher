@@ -9,7 +9,6 @@ from core.config import settings
 
 
 def hash_password(password: str) -> str:
-    # Mã hóa chuỗi sang bytes và cắt chuẩn tối đa 72 bytes theo giới hạn của bcrypt
     pwd_bytes = str(password).encode("utf-8")[:72]
     hashed = bcrypt.hashpw(pwd_bytes, bcrypt.gensalt())
     return hashed.decode("utf-8")

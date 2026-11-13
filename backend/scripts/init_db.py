@@ -45,29 +45,33 @@ def init_database():
             cursor.execute(create_users_table_query)
             print("Table 'users' created or already exists.")
 
+# [LƯU Ý: Code tạo bảng 'projects' phải nằm ở phía trên đoạn này]
+
             # 2.5 Tạo bảng deployments
             create_deployments_table_query = """
             CREATE TABLE IF NOT EXISTS deployments (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                project VARCHAR(255) NOT NULL,
+                project_id INT NOT NULL,
                 commit_sha VARCHAR(100) NOT NULL,
                 status VARCHAR(50) DEFAULT 'Pending',
                 github_pages_url VARCHAR(255),
                 error_message TEXT,
                 start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-                end_time DATETIME
+                end_time DATETIME,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             """
+        
             cursor.execute(create_deployments_table_query)
             print("Table 'deployments' created or already exists.")
-            
+
             # 3. Seed tài khoản mẫu
             sample_users = [
                 ("Tiến Đạt (Admin)", "tiendat.admin@example.com", hash_password("Admin123@")),
                 ("Member One", "member1@example.com", hash_password("Password123!")),
                 ("Member Two", "member2@example.com", hash_password("Password123!"))
             ]
-            
+
             seed_query = """
             INSERT IGNORE INTO users (full_name, email, hashed_password)
             VALUES (%s, %s, %s);

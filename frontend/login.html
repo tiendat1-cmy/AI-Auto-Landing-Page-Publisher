@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>AI Landing Page Publisher | Đăng Nhập &amp; Đăng Ký</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+              500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+              800: '#3730a3', 900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .input-error { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .glow-sphere {
+      position: absolute; border-radius: 9999px;
+      filter: blur(70px); pointer-events: none; z-index: 0;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+  <div class="min-h-screen flex flex-col lg:flex-row relative w-full overflow-x-hidden">
+    <!-- ================= LEFT PANEL: HERO / BRANDING ================= -->
+    <div class="lg:w-[48%] xl:w-[50%] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-8 lg:p-14 flex flex-col justify-between relative overflow-hidden">
+      <div class="glow-sphere w-80 h-80 bg-indigo-600/30 -top-20 -left-20"></div>
+      <div class="glow-sphere w-96 h-96 bg-violet-600/20 bottom-0 right-0"></div>
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-500 via-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-xl shadow-indigo-500/25 ring-2 ring-white/10">
+            <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-extrabold tracking-tight">AI PagePublisher</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 uppercase tracking-widest">AI Powered</span>
+            </div>
+            <p class="text-xs text-slate-400">Nền tảng tạo &amp; xuất bản Landing Page tự động</p>
+          </div>
+        </div>
+
+        <div class="mt-12 lg:mt-16 max-w-xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-400/20 text-indigo-300 text-xs font-semibold mb-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Tích hợp Gemini AI &amp; GitHub Pages 1-Click Deploy
+          </div>
+          <h1 class="text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight text-white leading-tight">
+            Biến ý tưởng sản phẩm thành <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-violet-300 to-amber-200">Landing Page hoàn chỉnh.</span>
+          </h1>
+          <p class="mt-4 text-slate-300 text-sm lg:text-base leading-relaxed font-normal">
+            Nhập mô tả sản phẩm, AI tự động viết nội dung bán hàng chuẩn chuyển đổi, ghép giao diện chuyên nghiệp và xuất bản trực tiếp lên web chỉ trong vài giây.
+          </p>
+        </div>
+
+        <div class="mt-8 space-y-4 max-w-lg">
+          <div class="flex items-start gap-3.5 p-3 rounded-xl hover:bg-white/5 transition-all">
+            <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+              <i class="fa-solid fa-robot text-sm"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Sinh nội dung tự động bằng AI</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Tự động tạo tiêu đề, mô tả tính năng và lời kêu gọi hành động thu hút.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5 p-3 rounded-xl hover:bg-white/5 transition-all">
+            <div class="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center shrink-0 border border-indigo-500/30">
+              <i class="fa-solid fa-layer-group text-sm"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Kho giao diện chuẩn chuyển đổi</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Đa dạng mẫu thiết kế tối ưu cho công nghệ, mỹ phẩm và dịch vụ.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3.5 p-3 rounded-xl hover:bg-white/5 transition-all">
+            <div class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+              <i class="fa-brands fa-github text-sm"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Xuất bản tức thì lên GitHub Pages</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Quản lý lịch sử phiên bản và khôi phục giao diện cũ dễ dàng.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative z-10 mt-10 pt-6 border-t border-slate-800">
+        <div class="glass-card rounded-2xl p-5 shadow-2xl">
+          <div class="flex items-center gap-1 text-amber-400 text-xs mb-2">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <span class="text-white font-bold ml-1.5 text-xs">4.9/5.0</span>
+            <span class="text-slate-400 text-[11px] ml-1">(Đánh giá từ cộng đồng nhà bán hàng)</span>
+          </div>
+          <p class="text-xs italic text-slate-200 leading-relaxed font-light">
+            “Từ lúc nhập thông tin sản phẩm đến khi có link website chạy thật chỉ mất chưa tới 1 phút. Quá tiện lợi cho các chiến dịch ra mắt nhanh!”
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RIGHT PANEL: AUTH PORTAL ================= -->
+    <div class="flex-1 bg-white flex flex-col justify-between relative px-6 py-8 sm:px-10 lg:px-14 xl:px-16 overflow-y-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <span class="text-xs font-semibold text-slate-500">Cổng xác thực thành viên</span>
+        <a class="text-indigo-600 hover:underline font-bold text-xs flex items-center gap-1" href="javascript:void(0)" onclick="notifyNotice('Vui lòng đăng nhập bằng tài khoản đã đăng ký hoặc tạo tài khoản mới.')">
+          <i class="fa-regular fa-circle-question"></i> Trợ giúp
+        </a>
+      </div>
+
+      <div class="max-w-md w-full mx-auto my-auto py-8">
+        <!-- Global Toast Notification -->
+        <div class="hidden mb-6 p-4 rounded-xl border text-sm flex items-start gap-3 fade-in shadow-md transition-all" id="globalToast">
+          <i class="fa-solid fa-circle-info mt-0.5 text-base" id="toastIcon"></i>
+          <div class="flex-1">
+            <p class="font-bold text-xs uppercase tracking-wider" id="toastTitle"></p>
+            <p class="text-xs mt-0.5 leading-relaxed" id="toastMessage"></p>
+          </div>
+          <button type="button" class="text-slate-400 hover:text-slate-600" onclick="dismissToast()">
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Tab Switcher -->
+        <div class="p-1 bg-slate-100 rounded-2xl flex items-center mb-7 border border-slate-200/80">
+          <button type="button" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-sm bg-white text-indigo-600" id="tabBtnLogin" onclick="switchAuthTab('login')">
+            <i class="fa-solid fa-arrow-right-to-bracket mr-1.5"></i> Đăng nhập
+          </button>
+          <button type="button" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-slate-800" id="tabBtnRegister" onclick="switchAuthTab('register')">
+            <i class="fa-solid fa-user-plus mr-1.5"></i> Tạo tài khoản mới
+          </button>
+        </div>
+
+        <!-- ================= LOGIN TAB ================= -->
+        <div class="fade-in" id="tabContentLogin">
+          <div class="mb-6">
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Chào mừng quay lại!</h2>
+            <p class="text-xs text-slate-500 mt-1">Đăng nhập để quản lý dự án và xuất bản Landing Page của bạn.</p>
+          </div>
+
+          <form class="space-y-4" id="formLogin" novalidate onsubmit="handleLoginSubmit(event)">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Email <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-envelope text-sm"></i>
+                </span>
+                <input class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400" id="loginIdentifier" placeholder="name@example.com" type="email" />
+              </div>
+              <p class="text-[11px] text-rose-500 mt-1 font-medium hidden" id="errLoginIdentifier"></p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Mật khẩu <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-lock text-sm"></i>
+                </span>
+                <input class="w-full pl-10 pr-11 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400" id="loginPassword" placeholder="••••••••" type="password" />
+                <button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600" onclick="togglePasswordVisibility('loginPassword', this)" type="button">
+                  <i class="fa-regular fa-eye text-xs"></i>
+                </button>
+              </div>
+              <p class="text-[11px] text-rose-500 mt-1 font-medium hidden" id="errLoginPassword"></p>
+            </div>
+
+            <button class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2" id="btnLoginSubmit" type="submit">
+              <span id="loginBtnText">Đăng nhập vào bảng điều khiển</span>
+              <i class="fa-solid fa-circle-notch fa-spin hidden text-sm" id="loginSpinner"></i>
+            </button>
+          </form>
+
+        <!-- ================= REGISTER TAB ================= -->
+        <div class="hidden fade-in" id="tabContentRegister">
+          <div class="mb-5">
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tạo tài khoản mới</h2>
+            <p class="text-xs text-slate-500 mt-1">Đăng ký miễn phí để bắt đầu xây dựng Landing Page đầu tiên.</p>
+          </div>
+
+          <form class="space-y-3" id="formRegister" novalidate onsubmit="handleRegisterSubmit(event)">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Họ và tên <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-user text-sm"></i>
+                </span>
+                <input class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400" id="regFullname" placeholder="Nguyễn Tiến Đạt" type="text" />
+              </div>
+              <p class="text-[11px] text-rose-500 mt-1 font-medium hidden" id="errRegFullname"></p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Email <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-envelope text-sm"></i>
+                </span>
+                <input class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400" id="regEmail" placeholder="name@example.com" type="email" />
+              </div>
+              <p class="text-[11px] text-rose-500 mt-1 font-medium hidden" id="errRegEmail"></p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Mật khẩu tạo mới <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-lock text-sm"></i>
+                </span>
+                <input class="w-full pl-10 pr-11 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400" id="regPassword" oninput="checkPasswordStrength(this.value)" placeholder="Tối thiểu 8 ký tự" type="password" />
+                <button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600" onclick="togglePasswordVisibility('regPassword', this)" type="button">
+                  <i class="fa-regular fa-eye text-xs"></i>
+                </button>
+              </div>
+              <div class="mt-1.5 flex items-center gap-2">
+                <div class="h-1 flex-1 rounded-full bg-slate-200 overflow-hidden">
+                  <div class="h-full bg-slate-300 w-0 transition-all duration-300" id="pwdStrengthBar"></div>
+                </div>
+                <span class="text-[10px] text-slate-400 font-semibold" id="pwdStrengthLabel">Độ bảo mật</span>
+              </div>
+              <p class="text-[11px] text-rose-500 mt-1 font-medium hidden" id="errRegPassword"></p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Xác nhận mật khẩu <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-check-double text-sm"></i>
+                </span>
+                <input class="w-full pl-10 pr-11 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400" id="regConfirmPassword" placeholder="Nhập lại mật khẩu vừa tạo" type="password" />
+                <button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600" onclick="togglePasswordVisibility('regConfirmPassword', this)" type="button">
+                  <i class="fa-regular fa-eye text-xs"></i>
+                </button>
+              </div>
+              <p class="text-[11px] text-rose-500 mt-1 font-medium hidden" id="errRegConfirmPassword"></p>
+            </div>
+
+            <div class="pt-1">
+              <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600">
+                <input class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" id="regTerms" type="checkbox" checked />
+                <span class="text-[11px] leading-tight">
+                  Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của hệ thống.
+                </span>
+              </label>
+              <p class="text-[11px] text-rose-500 mt-1 font-medium hidden" id="errRegTerms"></p>
+            </div>
+
+            <button class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 hover:opacity-95 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2" id="btnRegSubmit" type="submit">
+              <span id="regBtnText">Đăng ký tài khoản</span>
+              <i class="fa-solid fa-circle-notch fa-spin hidden text-sm" id="regSpinner"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-slate-400 text-[11px] gap-2">
+        <p>© 2026 AI Auto Landing Page Publisher - Nhóm 6.</p>
+        <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> JWT Auth Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

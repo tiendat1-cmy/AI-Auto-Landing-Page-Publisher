@@ -8,145 +8,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.config import settings
 
 
-def _table_exists(cursor, table_name: str) -> bool:
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM information_schema.TABLES
-        WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s
-        """,
-        (settings.DB_NAME, table_name),
-    )
-    return cursor.fetchone()[0] > 0
-
-
-def _column_exists(cursor, table_name: str, column_name: str) -> bool:
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s
-        """,
-        (settings.DB_NAME, table_name, column_name),
-    )
-    return cursor.fetchone()[0] > 0
-
-
-def _index_exists(cursor, table_name: str, index_name: str) -> bool:
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM information_schema.STATISTICS
-        WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND INDEX_NAME = %s
-        """,
-        (settings.DB_NAME, table_name, index_name),
-    )
-    return cursor.fetchone()[0] > 0
-
-
-def _constraint_exists(cursor, table_name: str, constraint_name: str) -> bool:
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM information_schema.TABLE_CONSTRAINTS
-        WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND CONSTRAINT_NAME = %s
-        """,
-        (settings.DB_NAME, table_name, constraint_name),
-    )
-    return cursor.fetchone()[0] > 0
-
-
-def ensure_projects_table(cursor) -> None:
-    """Tạo bảng projects nếu chưa có, rồi bổ sung raw_json_data mà không xóa dữ liệu cũ."""
-    if not _table_exists(cursor, "projects"):
-        cursor.execute(
-            """
-            CREATE TABLE projects (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                raw_json_data JSON NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-            """
-        )
-        print("Table 'projects' created.")
-    else:
-        print("Table 'projects' already exists. Existing columns were left unchanged.")
-
-    if not _column_exists(cursor, "projects", "raw_json_data"):
-        cursor.execute("ALTER TABLE projects ADD COLUMN raw_json_data JSON NULL;")
-        print("Column 'projects.raw_json_data' added.")
-    else:
-        print("Column 'projects.raw_json_data' already exists.")
-
-
-def ensure_generations_table(cursor) -> None:
-    if not _table_exists(cursor, "generations"):
-        cursor.execute(
-            """
-            CREATE TABLE generations (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                project_id INT NOT NULL,
-                prompt TEXT NOT NULL,
-                response_json JSON NULL,
-                status VARCHAR(20) NOT NULL,
-                error_message TEXT NULL,
-                created_at DATETIME NOT NULL DEFAULT (UTC_TIMESTAMP()),
-                INDEX ix_generations_project_id (project_id),
-                CONSTRAINT fk_generations_project_id
-                    FOREIGN KEY (project_id) REFERENCES projects (id)
-                    ON DELETE CASCADE,
-                CONSTRAINT chk_generations_status
-                    CHECK (status IN ('pending', 'success', 'failed'))
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-            """
-        )
-        print("Table 'generations' created.")
-        return
-
-    print("Table 'generations' already exists. Checking missing columns and constraints.")
-    additions = [
-        ("project_id", "ALTER TABLE generations ADD COLUMN project_id INT NULL"),
-        ("prompt", "ALTER TABLE generations ADD COLUMN prompt TEXT NULL"),
-        ("response_json", "ALTER TABLE generations ADD COLUMN response_json JSON NULL"),
-        ("status", "ALTER TABLE generations ADD COLUMN status VARCHAR(20) NULL"),
-        ("error_message", "ALTER TABLE generations ADD COLUMN error_message TEXT NULL"),
-        (
-            "created_at",
-            "ALTER TABLE generations ADD COLUMN created_at DATETIME NULL DEFAULT (UTC_TIMESTAMP())",
-        ),
-    ]
-    for column_name, statement in additions:
-        if not _column_exists(cursor, "generations", column_name):
-            cursor.execute(statement)
-            print(f"Column 'generations.{column_name}' added.")
-
-    if not _index_exists(cursor, "generations", "ix_generations_project_id"):
-        cursor.execute(
-            "ALTER TABLE generations ADD INDEX ix_generations_project_id (project_id);"
-        )
-        print("Index 'ix_generations_project_id' added.")
-
-    if not _constraint_exists(cursor, "generations", "fk_generations_project_id"):
-        cursor.execute(
-            """
-            ALTER TABLE generations
-            ADD CONSTRAINT fk_generations_project_id
-            FOREIGN KEY (project_id) REFERENCES projects (id)
-            ON DELETE CASCADE;
-            """
-        )
-        print("Foreign key 'fk_generations_project_id' added.")
-
-    if not _constraint_exists(cursor, "generations", "chk_generations_status"):
-        cursor.execute(
-            """
-            ALTER TABLE generations
-            ADD CONSTRAINT chk_generations_status
-            CHECK (status IN ('pending', 'success', 'failed'));
-            """
-        )
-        print("Check constraint 'chk_generations_status' added.")
-
-
 def hash_password(password: str) -> str:
     pwd_bytes = str(password).encode("utf-8")[:72]
     hashed = bcrypt.hashpw(pwd_bytes, bcrypt.gensalt())
@@ -286,12 +147,28 @@ def init_database():
             cursor.execute(create_projects_table_query)
             print("Table 'projects' created or already exists.")
 
-            # 4. Bảng projects (tạo nếu chưa có) và cột raw_json_data
-            ensure_projects_table(cursor)
-
-            # 5. Bảng generations, khóa ngoại và index
-            ensure_generations_table(cursor)
-
+            # 7. Tạo bảng project_versions (lưu lịch sử phiên bản Landing Page)
+            create_project_versions_table_query = """
+            CREATE TABLE IF NOT EXISTS project_versions (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT NOT NULL,
+                version_number INT NOT NULL,
+                json_content JSON NULL,
+                html_snapshot LONGTEXT NOT NULL,
+                commit_sha VARCHAR(40) NULL,
+                change_summary VARCHAR(255) NULL,
+                created_by INT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX ix_project_versions_project_id (project_id),
+                CONSTRAINT uq_project_version UNIQUE (project_id, version_number),
+                CONSTRAINT fk_versions_project FOREIGN KEY (project_id)
+                    REFERENCES projects(id) ON DELETE CASCADE,
+                CONSTRAINT fk_versions_user FOREIGN KEY (created_by)
+                    REFERENCES users(id) ON DELETE SET NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_project_versions_table_query)
+            print("Table 'project_versions' created or already exists.")
             print("Database migration & seeding completed successfully!")
 
     except Exception as e:

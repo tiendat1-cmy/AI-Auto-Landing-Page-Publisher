@@ -118,6 +118,35 @@ def init_database():
             """
             cursor.executemany(seed_templates_query, sample_templates)
             print("Seeded 3 sample templates into 'templates' table.")
+
+            # 6. Tạo bảng projects
+            create_projects_table_query = """
+            CREATE TABLE IF NOT EXISTS projects (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                template_id INT NOT NULL,
+                campaign_name VARCHAR(255) NOT NULL,
+                product_name VARCHAR(255) NOT NULL,
+                product_description TEXT NULL,
+                price DECIMAL(12,2) NULL,
+                image_url VARCHAR(500) NULL,
+                color_theme VARCHAR(50) NULL,
+                facebook_url VARCHAR(500) NULL,
+                tiktok_url VARCHAR(500) NULL,
+                instagram_url VARCHAR(500) NULL,
+                repo_url VARCHAR(500) NULL,
+                github_pages_url VARCHAR(500) NULL,
+                raw_json_data JSON NULL,
+                status VARCHAR(20) NOT NULL DEFAULT 'draft',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                CONSTRAINT fk_projects_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                CONSTRAINT fk_projects_template FOREIGN KEY (template_id) REFERENCES templates(id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_projects_table_query)
+            print("Table 'projects' created or already exists.")
+
             print("Database migration & seeding completed successfully!")
 
     except Exception as e:

@@ -4,24 +4,30 @@ import json
 import pymysql
 import bcrypt
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Chuẩn hóa đường dẫn sys.path để nhận diện core.config
+current_dir = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.dirname(current_dir)
+project_root = os.path.dirname(backend_dir)
+
+sys.path.append(backend_dir)
+sys.path.append(project_root)
+
 from core.config import settings
 
 def hash_password(password: str) -> str:
-    # Mã hóa chuỗi sang bytes và cắt chuẩn tối đa 72 bytes theo đúng giới hạn của bcrypt
     pwd_bytes = str(password).encode('utf-8')[:72]
     hashed = bcrypt.hashpw(pwd_bytes, bcrypt.gensalt())
     return hashed.decode('utf-8')
 
 def init_database():
-    db_password = settings.DB_PASSWORD if settings.DB_PASSWORD else "@Phamquocanh15072007"
-    
     print(f"Connecting to MySQL database: {settings.DB_NAME}...")
+    
+    # Kết nối bảo mật lấy từ biến môi trường (.env), không hardcode mật khẩu
     connection = pymysql.connect(
         host=settings.DB_HOST,
         port=settings.DB_PORT,
         user=settings.DB_USER,
-        password=db_password,
+        password=settings.DB_PASSWORD,
         charset="utf8mb4",
         autocommit=True,
     )
@@ -60,7 +66,7 @@ def init_database():
             cursor.executemany(seed_users_query, sample_users)
             print("Seeded sample users into 'users' table.")
 
-            # 4. Tạo bảng templates
+            # 4. Tạo bảng templates (Đầy đủ các cột theo đặc tả, tránh bản rút gọn bị lỗi)
             create_templates_table_query = """
             CREATE TABLE IF NOT EXISTS templates (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,7 +81,7 @@ def init_database():
             cursor.execute(create_templates_table_query)
             print("Table 'templates' created or already exists.")
 
-            # 5. Seed 3 mẫu template chuẩn theo đặc tả
+            # Seed 3 mẫu template chuẩn
             sample_templates = [
                 (
                     "Modern Tech Gadget",
@@ -120,6 +126,50 @@ def init_database():
             """
             cursor.executemany(seed_templates_query, sample_templates)
             print("Seeded 3 sample templates into 'templates' table.")
+
+            # 5. Tạo bảng projects (Đặt TRƯỚC các bảng có khóa ngoại trỏ tới nó)
+            create_projects_table_query = """
+            CREATE TABLE IF NOT EXISTS projects (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                template_id INT NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_projects_table_query)
+            print("Table 'projects' created or already exists.")
+
+            # 6. Tạo bảng project_versions (Đặt SAU projects theo góp ý của Hoàng)
+            create_project_versions_table_query = """
+            CREATE TABLE IF NOT EXISTS project_versions (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT NOT NULL,
+                version_number INT DEFAULT 1,
+                content TEXT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_project_versions_table_query)
+            print("Table 'project_versions' created or already exists.")
+
+            # 7. Tạo bảng deployments (Đặt SAU projects theo góp ý của Toàn)
+            create_deployments_table_query = """
+            CREATE TABLE IF NOT EXISTS deployments (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT NOT NULL,
+                deployment_url VARCHAR(255) NOT NULL,
+                status VARCHAR(50) DEFAULT 'success',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_deployments_table_query)
+            print("Table 'deployments' created or already exists.")
+
             print("Database migration & seeding completed successfully!")
 
     except Exception as e:

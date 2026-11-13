@@ -10,8 +10,9 @@ from core.config import settings
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
-    # Đảm bảo password là chuỗi thuần túy và không vượt quá 72 ký tự
-    clean_pwd = str(password)[:72]
+    # bcrypt chỉ xử lý tối đa 72 byte, nên cắt theo byte UTF-8
+    # (cắt theo ký tự có thể vượt 72 byte với tiếng Việt/emoji)
+    clean_pwd = str(password).encode("utf-8")[:72].decode("utf-8", "ignore")
     return pwd_context.hash(clean_pwd)
 
 def init_database():
@@ -45,7 +46,46 @@ def init_database():
             cursor.execute(create_users_table_query)
             print("Table 'users' created or already exists.")
             
-            # 3. Tạo bảng project_versions (lưu lịch sử phiên bản Landing Page)
+            # 3. Tạo bảng templates và projects
+            create_templates_table_query = """
+            CREATE TABLE IF NOT EXISTS templates (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_templates_table_query)
+            print("Table 'templates' created or already exists.")
+
+            create_projects_table_query = """
+            CREATE TABLE IF NOT EXISTS projects (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                template_id INT NOT NULL,
+                campaign_name VARCHAR(255) NOT NULL,
+                product_name VARCHAR(255) NOT NULL,
+                product_description TEXT,
+                price DECIMAL(12,2),
+                image_url VARCHAR(500),
+                color_theme VARCHAR(50),
+                facebook_url VARCHAR(500),
+                tiktok_url VARCHAR(500),
+                instagram_url VARCHAR(500),
+                repo_url VARCHAR(500),
+                github_pages_url VARCHAR(500),
+                raw_json_data JSON,
+                status VARCHAR(20) NOT NULL DEFAULT 'draft',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                CONSTRAINT fk_projects_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                CONSTRAINT fk_projects_template FOREIGN KEY (template_id) REFERENCES templates(id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_projects_table_query)
+            print("Table 'projects' created or already exists.")
+
+            # 4. Tạo bảng project_versions (lưu lịch sử phiên bản Landing Page)
+            #    Phải tạo sau bảng projects vì có khóa ngoại trỏ tới projects(id)
             create_project_versions_table_query = """
             CREATE TABLE IF NOT EXISTS project_versions (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,7 +108,7 @@ def init_database():
             cursor.execute(create_project_versions_table_query)
             print("Table 'project_versions' created or already exists.")
 
-            # 4. Seed tài khoản mẫu
+            # 5. Seed tài khoản mẫu
             sample_users = [
                 ("Tiến Đạt (Admin)", "tiendat.admin@example.com", hash_password("Admin123@")),
                 ("Member One", "member1@example.com", hash_password("Password123!")),

@@ -169,6 +169,24 @@ def init_database():
             """
             cursor.execute(create_project_versions_table_query)
             print("Table 'project_versions' created or already exists.")
+
+            # 8. Tạo bảng deployments (lưu lịch sử triển khai GitHub Pages)
+            create_deployments_table_query = """
+            CREATE TABLE IF NOT EXISTS deployments (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT NOT NULL,
+                commit_sha VARCHAR(100) NOT NULL,
+                status VARCHAR(50) DEFAULT 'Pending',
+                github_pages_url VARCHAR(255) NULL,
+                error_message TEXT NULL,
+                start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+                end_time DATETIME NULL,
+                CONSTRAINT fk_deployments_project FOREIGN KEY (project_id)
+                    REFERENCES projects(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """
+            cursor.execute(create_deployments_table_query)
+            print("Table 'deployments' created or already exists.")
             print("Database migration & seeding completed successfully!")
 
     except Exception as e:

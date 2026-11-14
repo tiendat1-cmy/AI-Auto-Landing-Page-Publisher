@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="vi" style="--primary-color: {{data.primary_color}};"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{data.brand_name}} | Trang Bán Hàng Trực Tuyến Chính Hãng</title>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "brand": {
+              DEFAULT: "var(--primary-color, {{data.primary_color}})",
+              50: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 8%, white)",
+              100: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 15%, white)",
+              200: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 25%, white)",
+              300: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 40%, white)",
+              400: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 60%, white)",
+              500: "var(--primary-color, {{data.primary_color}})",
+              600: "var(--primary-color, {{data.primary_color}})",
+              700: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 85%, black)",
+              800: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 70%, black)",
+              900: "color-mix(in srgb, var(--primary-color, {{data.primary_color}}) 55%, black)"
+            },
+            "primary": "var(--primary-color, {{data.primary_color}})",
+            "primary-container": "var(--primary-color, {{data.primary_color}})",
+            "surface-tint": "var(--primary-color, {{data.primary_color}})",
+            "outline": "var(--primary-color, {{data.primary_color}})",
+            "on-tertiary-container": "#ffcdc7",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#fff5f5",
+            "outline-variant": "#fecaca",
+            "on-error-container": "#93000a",
+            "inverse-surface": "#2f3131",
+            "error": "#dc2626",
+            "on-secondary-container": "#15803d",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "surface-variant": "#fef2f2",
+            "on-tertiary-fixed-variant": "#8e1214",
+            "surface": "#ffffff",
+            "tertiary": "#ea580c",
+            "on-primary-container": "#ffffff",
+            "inverse-on-surface": "#f0f1f1",
+            "tertiary-fixed": "#ffdad6",
+            "surface-bright": "#ffffff",
+            "on-secondary-fixed": "#14532d",
+            "primary-fixed-dim": "#ffb4ab",
+            "surface-container-high": "#fee2e2",
+            "secondary-fixed": "#dcfce7",
+            "primary-fixed": "#fee2e2",
+            "on-secondary-fixed-variant": "#166534",
+            "on-background": "#1c1917",
+            "secondary": "#16a34a",
+            "on-surface": "#1c1917",
+            "surface-container": "#fff1f2",
+            "on-primary-fixed": "#410002",
+            "on-surface-variant": "#57534e",
+            "surface-container-highest": "#fecdd3",
+            "inverse-primary": "#ffb4ab",
+            "tertiary-fixed-dim": "#ffb4ac",
+            "on-tertiary-fixed": "#410002",
+            "on-error": "#ffffff",
+            "on-primary-fixed-variant": "#93000b",
+            "surface-dim": "#f5f5f4",
+            "secondary-container": "#dcfce7",
+            "error-container": "#fee2e2",
+            "secondary-fixed-dim": "#bbf7d0",
+            "background": "#ffffff",
+            "tertiary-container": "#ffedd5",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-mobile": "1rem",
+            "gutter-mobile": "1rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "margin": "2rem",
+            "space-xl": "2.5rem",
+            "space-lg": "1.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "display": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "display-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "body-lg": ["1.125rem", { "lineHeight": "1.6", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "body-sm": ["0.875rem", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-md": ["1.75rem", { "lineHeight": "1.3", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "1.25", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-md": ["1rem", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "display": ["3.5rem", { "lineHeight": "1.15", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "headline-lg": ["2.5rem", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "display-mobile": ["2.25rem", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["0.875rem", { "lineHeight": "1.25", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1.2", "letterSpacing": "0.04em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    :root {
+      --primary-color: {{data.primary_color}};
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased selection:bg-brand-100 selection:text-brand-700 min-h-screen flex flex-col">
+<!-- Top Announcement Bar (Dynamic Primary Color Gradient) -->
+<div class="bg-gradient-to-r from-brand-700 via-brand-600 to-brand-700 text-white font-label-sm text-label-sm py-2 px-margin text-center flex items-center justify-center gap-space-sm shadow-sm relative z-50">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-amber-300">bolt</span>
+      Ưu Đãi Đặc Biệt: Giảm tới {{data.discount_percent}} hôm nay
+    </span>
+<span class="opacity-60 hidden md:inline">•</span>
+<span class="hidden md:inline">Giao hàng miễn phí toàn quốc cho 50 đơn hàng đầu tiên</span>
+<span class="bg-white/20 text-white px-2 py-0.5 rounded-full text-xs font-semibold ml-1">HOT SALE</span>
+</div>
+<!-- Shared TopNavBar Component -->
+<header class="bg-surface-container-lowest border-b border-brand-100 docked full-width top-0 sticky z-50 shadow-sm">
+<div class="flex justify-between items-center w-full px-margin max-w-7xl mx-auto h-16">
+<!-- Brand & Verified Badge -->
+<div class="flex items-center gap-3">
+<a class="font-headline-md text-headline-md font-bold text-brand-600 tracking-tight flex items-center gap-1.5" href="#">
+<span>{{data.brand_name}}</span>
+<span class="material-symbols-outlined fill text-brand-600 text-[20px]" data-icon="verified" title="Chứng nhận gian hàng chính hãng">verified</span>
+</a>
+<span class="hidden lg:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 font-label-sm text-label-sm border border-brand-200">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+          Chính Hãng 100%
+        </span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-6 font-label-md text-label-md">
+<a class="text-stone-600 hover:text-brand-600 transition-colors pb-1" href="#perks">Perks</a>
+<a class="text-brand-600 font-bold border-b-2 border-brand-600 pb-1 flex items-center gap-1" href="#flash-sale">
+<span class="material-symbols-outlined text-[18px] text-brand-600">local_fire_department</span>
+          Flash Sale
+        </a>
+<a class="text-stone-600 hover:text-brand-600 transition-colors pb-1" href="#features">Features</a>
+<a class="text-stone-600 hover:text-brand-600 transition-colors pb-1" href="#reviews">Reviews</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<div class="hidden xl:flex items-center gap-2 text-stone-600 font-label-sm text-label-sm pr-2 border-r border-brand-100">
+<span class="material-symbols-outlined text-brand-600 text-[20px]" data-icon="support_agent">support_agent</span>
+<div>
+<div class="text-xs text-stone-400 leading-tight">Hotline 24/7</div>
+<div class="font-bold text-stone-800 leading-tight">1900 8899</div>
+</div>
+</div>
+<a class="hidden sm:inline-flex items-center text-stone-600 hover:text-brand-600 font-label-md text-label-md transition-colors px-3 py-1.5 rounded-lg hover:bg-brand-50" href="#support">
+          Support
+        </a>
+<!-- Cart Action Icon -->
+<a class="relative p-2 text-stone-700 hover:text-brand-600 transition-colors hover:bg-brand-50 rounded-lg active:scale-[0.98]" href="#order-now">
+<span class="material-symbols-outlined text-[24px]" data-icon="shopping_bag">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-brand-600 text-white font-label-sm text-label-sm text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white font-bold">1</span>
+</a>
+<!-- Primary Action -->
+<a class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-label-md text-label-md px-4 py-2.5 rounded-lg shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98]" href="#order-now">
+<span>Order Now</span>
+<span class="material-symbols-outlined text-[18px] ml-1.5" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Hero Section: Desktop 2-Column Responsive Layout -->
+<section class="max-w-7xl mx-auto px-margin py-space-xl lg:py-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+<!-- Left Column: Copy, Badge, CTA & Trust -->
+<div class="lg:col-span-7 flex flex-col items-start gap-5">
+<!-- Dynamic Hero Badge -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 font-label-sm text-label-sm">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-brand-600"></span>
+</span>
+<span>{{data.hero_badge}}</span>
+</div>
+<!-- Headline & Subheadline -->
+<h1 class="font-display text-display text-stone-900 tracking-tight">
+            {{data.headline}}
+          </h1>
+<p class="font-body-lg text-body-lg text-stone-600 max-w-2xl">
+            {{data.subheadline}}
+          </p>
+<!-- Social Proof Stars & Sold Counter -->
+<div class="flex flex-wrap items-center gap-4 py-1">
+<div class="flex items-center gap-1 text-amber-500">
+<span class="material-symbols-outlined fill text-amber-500" data-icon="star">star</span>
+<span class="material-symbols-outlined fill text-amber-500" data-icon="star">star</span>
+<span class="material-symbols-outlined fill text-amber-500" data-icon="star">star</span>
+<span class="material-symbols-outlined fill text-amber-500" data-icon="star">star</span>
+<span class="material-symbols-outlined fill text-amber-500" data-icon="star">star</span>
+</div>
+<div class="font-label-md text-label-md text-stone-800 flex items-center gap-2">
+<span class="font-bold text-stone-900">4.9/5.0</span>
+<span class="text-stone-300">•</span>
+<span class="text-stone-600">Đã bán <strong class="text-brand-600 font-semibold">{{data.sold_count}}</strong> sản phẩm</span>
+</div>
+<span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-100">
+<span class="material-symbols-outlined text-[14px] text-brand-600">verified</span>
+              Đánh giá thực
+            </span>
+</div>
+<!-- Hero Action CTAs -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto pt-2">
+<a class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-label-md text-label-md h-12 px-space-lg rounded-lg shadow-md hover:shadow-lg transition-all duration-150 active:scale-[0.98] text-center" href="#order-now">
+<span>{{data.cta_text}}</span>
+<span class="material-symbols-outlined text-[20px] ml-2" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+</a>
+<a class="inline-flex items-center justify-center bg-white hover:bg-brand-50 text-stone-800 border border-brand-200 font-label-md text-label-md h-12 px-space-lg rounded-lg transition-colors active:scale-[0.98] text-center" href="#flash-sale">
+<span class="material-symbols-outlined text-[20px] mr-2 text-brand-600" data-icon="local_mall">local_mall</span>
+<span>Xem Thông Số &amp; Quà Tặng</span>
+</a>
+</div>
+<!-- Mini Guarantee Badges -->
+<div class="grid grid-cols-3 gap-3 pt-4 w-full border-t border-brand-100">
+<div class="flex items-center gap-2 text-xs font-medium text-stone-600">
+<span class="material-symbols-outlined text-brand-600 text-[20px]" data-icon="check_circle">check_circle</span>
+<span>100% Chính Hãng</span>
+</div>
+<div class="flex items-center gap-2 text-xs font-medium text-stone-600">
+<span class="material-symbols-outlined text-brand-600 text-[20px]" data-icon="local_shipping">local_shipping</span>
+<span>Giao Hỏa Tốc COD</span>
+</div>
+<div class="flex items-center gap-2 text-xs font-medium text-stone-600">
+<span class="material-symbols-outlined text-brand-600 text-[20px]" data-icon="published_with_changes">published_with_changes</span>
+<span>Đổi Mới 30 Ngày</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Interactive Showcase Product Card -->
+<div class="lg:col-span-5 relative">
+<div class="bg-white rounded-xl border border-brand-100 p-6 shadow-sm relative overflow-hidden group">
+<!-- High-converting discount and quality badges -->
+<div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
+<span class="bg-brand-600 text-white font-label-sm text-label-sm px-3 py-1 rounded-full uppercase tracking-wider font-bold shadow-sm">
+                Giảm {{data.discount_percent}}
+              </span>
+<span class="bg-white/90 backdrop-blur-sm text-stone-800 font-label-sm text-label-sm px-2.5 py-0.5 rounded-full border border-brand-200 inline-flex items-center gap-1 w-max shadow-xs">
+<span class="material-symbols-outlined fill text-brand-600 text-[14px]" data-icon="award_star">award_star</span>
+                Chính hãng 100%
+              </span>
+</div>
+<!-- Product Showcase Image -->
+<div class="relative w-full aspect-square rounded-lg bg-stone-50 flex items-center justify-center overflow-hidden mb-4 border border-brand-50">
+<img alt="Hình ảnh sản phẩm {{data.brand_name}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAY9cKYAVeIuim8vi64tG4uIvgp3v7llns0Ln-JZ6aWzG0msviB0qjF96q2xEJ7QrLxKX7uMkkGcgMS7-vpNsqM-Dt7mqsbO3pFIp88e0x_nLB4iFjVP0MhA3XGEQMK24-LFIm7XUh-sYvMCzVD4iXloAj4sco6_F3t0cn8QbnEkPyVtXpanOyeLl7kLJBDchmNnG_l3qMVts6Ku4MsqUGRTg_fTclgg8K5fVCmsI"/>
+</div>
+<!-- Quick Thumbnail Preview Gallery -->
+<div class="grid grid-cols-4 gap-2 mb-4">
+<button class="aspect-square rounded-lg border-2 border-brand-600 overflow-hidden p-0.5 bg-white">
+<img class="w-full h-full object-cover rounded" data-alt="Close up angle of flagship electronic gadget showing premium chassis materials, subtle glow indicator, and precision finish under balanced light studio setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFQozNLUYuOTqPkr3M1caT-73T96ajZSDC42RxHvs3-HDG_J3OfGrPNjXOoco-a-4_gAXR_QC2hkzHGqWW96btyUD069z7407FQTp8cjFLF6Jcw3dzAhmyd5ufKXgB2KpqLTbqcOk1tSMUAnlLTbUVfOclei1GAbsKOtm-QatTZyI-xpHDFf2D1UC29_s8ADD8wRvjEQ9Hwq5Bo0_1K6LWkQj6RMbjABSDnQfH6oE"/>
+</button>
+<button class="aspect-square rounded-lg border border-brand-100 overflow-hidden p-0.5 bg-white hover:border-brand-600 transition-colors">
+<img class="w-full h-full object-cover rounded" data-alt="Side profile view of ergonomic modern hardware accessory with sleek metallic edges and matte texture on light clean gradient studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSyYKl-SkxYWe-2w8Wy2Q14sQF578Cmn5v3WftkCV5moQy9PGQIv-iwPOfqJ9dcVIBvt6oE_g3NSD588AqzwRNRnyKb05GJAJVNnuA7pCphXaijwRCEnU5c_HY9GzVoWzFtxP21t4ewxErxr7uir7I7oFpmkN3wP2oyYFQKxVtaBMyn_n3CBADW8PLZumCW-WagxJgW7Qgwb7PEHWC2gfPmBqQwg3gvjzpVgbSwg8"/>
+</button>
+<button class="aspect-square rounded-lg border border-brand-100 overflow-hidden p-0.5 bg-white hover:border-brand-600 transition-colors">
+<img class="w-full h-full object-cover rounded" data-alt="Product packaging and full bundled accessory kit neatly laid out on minimalist surface with guarantee seal and luxury presentation box." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGuFVZJPRwak7WdKMhBQ-XOniIED-9RzoknWvGqIpPiaUzoH_03EsZBYuDRpUJj6tyW-9d726X_ncEATGEYDpGIn5cYTNKmpMlUCi2TxJWG9H5RXMTsgIjvMawN1_0AMhUnF4mb44Okpll-9ro2rCy3Q5MESp_x-o1AHwGtr4nAYsStL9b5XatsEGRpoVog-euLPKC8vHGZeb21Ww8I6nzBtcY4t85iGKR6rxeoq4"/>
+</button>
+<button class="aspect-square rounded-lg border border-brand-100 overflow-hidden p-0.5 bg-white hover:border-brand-600 transition-colors flex items-center justify-center text-stone-600 font-label-sm text-label-sm">
+<span>+3 Góc</span>
+</button>
+</div>
+<!-- Fast Spec highlight card footer -->
+<div class="flex items-center justify-between pt-3 border-t border-brand-100">
+<div>
+<span class="text-xs text-stone-400 block">Bảo hành ủy quyền</span>
+<span class="font-label-md text-label-md text-stone-800 font-semibold">24 Tháng Toàn Diện</span>
+</div>
+<a class="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700 font-label-md text-label-md font-semibold" href="#order-now">
+<span>Đặt ngay</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="north_east">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Flash Sale Urgency Section (Subtle Warm Primary Container) -->
+<section class="bg-brand-50/60 py-10 border-y border-brand-100" id="flash-sale">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="bg-white rounded-xl border border-brand-200 p-6 lg:p-8 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+<!-- Sale Title & Badge -->
+<div class="lg:col-span-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="p-1.5 bg-brand-600 text-white rounded-lg flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined fill text-[20px]" data-icon="bolt">bolt</span>
+</span>
+<h2 class="font-headline-sm text-headline-sm font-bold text-stone-900 tracking-tight uppercase">
+                  Flash Sale Trong Ngày
+                </h2>
+</div>
+<p class="font-body-sm text-body-sm text-stone-600">
+                Áp dụng trợ giá số lượng giới hạn. Khóa giá đặc biệt trước khi đồng hồ đếm ngược kết thúc.
+              </p>
+</div>
+<!-- Countdown Timer Blocks (Dynamic Primary Theme) -->
+<div class="lg:col-span-5 flex items-center justify-center lg:justify-start gap-3">
+<div class="flex flex-col items-center bg-brand-50/70 rounded-lg p-3 min-w-[70px] border border-brand-200">
+<span class="font-display-mobile text-display-mobile font-bold text-brand-600 leading-none" id="timer-hours">02</span>
+<span class="font-label-sm text-label-sm text-stone-500 uppercase mt-1">Giờ</span>
+</div>
+<span class="font-bold text-2xl text-brand-400">:</span>
+<div class="flex flex-col items-center bg-brand-50/70 rounded-lg p-3 min-w-[70px] border border-brand-200">
+<span class="font-display-mobile text-display-mobile font-bold text-brand-600 leading-none" id="timer-minutes">43</span>
+<span class="font-label-sm text-label-sm text-stone-500 uppercase mt-1">Phút</span>
+</div>
+<span class="font-bold text-2xl text-brand-400">:</span>
+<div class="flex flex-col items-center bg-brand-50/70 rounded-lg p-3 min-w-[70px] border border-brand-200">
+<span class="font-display-mobile text-display-mobile font-bold text-brand-600 leading-none" id="timer-seconds">19</span>
+<span class="font-label-sm text-label-sm text-stone-500 uppercase mt-1">Giây</span>
+</div>
+<span class="font-bold text-2xl text-brand-400">:</span>
+<div class="flex flex-col items-center bg-brand-50/70 rounded-lg p-3 min-w-[70px] border border-brand-200">
+<span class="font-display-mobile text-display-mobile font-bold text-brand-700 leading-none" id="timer-millis">88</span>
+<span class="font-label-sm text-label-sm text-stone-500 uppercase mt-1">Mili-giây</span>
+</div>
+</div>
+<!-- Inventory Urgency Progress Bar -->
+<div class="lg:col-span-3 flex flex-col justify-center">
+<div class="flex justify-between items-center text-xs font-semibold mb-1.5">
+<span class="text-brand-600 flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[16px] text-brand-600">trending_down</span>
+                  Chỉ còn 15 suất ưu đãi
+                </span>
+<span class="text-stone-600">Đã bán 85%</span>
+</div>
+<div class="w-full h-3 bg-brand-100 rounded-full overflow-hidden p-0.5 border border-brand-200">
+<div class="h-full bg-gradient-to-r from-brand-500 to-brand-600 rounded-full transition-all duration-500 w-[85%]"></div>
+</div>
+<div class="text-[11px] text-stone-500 mt-1.5 flex items-center justify-between">
+<span>Số lượng có hạn</span>
+<span class="text-brand-600 font-medium">12 khách đang xem trang</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Value Proposition & Features Grid (4-Column Bento Layout) -->
+<section class="max-w-7xl mx-auto px-margin py-space-xl" id="perks">
+<div class="text-center max-w-3xl mx-auto mb-12">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-brand-700 font-bold bg-brand-100 px-3 py-1 rounded-full border border-brand-200">
+          Quyền Lợi &amp; Bảo Chứng
+        </span>
+<h2 class="font-headline-lg text-headline-lg font-bold text-stone-900 mt-3">
+          Cam Kết Chất Lượng Độc Quyền
+        </h2>
+<p class="font-body-md text-body-md text-stone-600 mt-2">
+          {{data.features}} - Được thiết kế để người mua an tâm tuyệt đối từ đơn hàng đầu tiên.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Perk 1 -->
+<div class="bg-white rounded-xl border border-brand-100 p-6 hover:shadow-md hover:border-brand-300 transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-lg bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 mb-4">
+<span class="material-symbols-outlined text-[28px]" data-icon="local_shipping">local_shipping</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 mb-2">
+              Miễn phí giao hàng
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 leading-relaxed">
+              Vận chuyển nhanh toàn quốc không thu phụ phí, bọc hộp chống sốc chuyên dụng hai lớp.
+            </p>
+</div>
+<span class="mt-4 pt-3 border-t border-brand-100 text-xs font-semibold text-brand-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check</span> Toàn Quốc 63 Tỉnh Thành
+          </span>
+</div>
+<!-- Perk 2 -->
+<div class="bg-white rounded-xl border border-brand-100 p-6 hover:shadow-md hover:border-brand-300 transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-lg bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 mb-4">
+<span class="material-symbols-outlined text-[28px]" data-icon="verified_user">verified_user</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 mb-2">
+              Bảo hành 24 tháng
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 leading-relaxed">
+              Kích hoạt bảo hành điện tử theo Serial Number, tra cứu trực tuyến minh bạch mọi lúc.
+            </p>
+</div>
+<span class="mt-4 pt-3 border-t border-brand-100 text-xs font-semibold text-brand-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check</span> Chính Hãng Ủy Quyền
+          </span>
+</div>
+<!-- Perk 3 -->
+<div class="bg-white rounded-xl border border-brand-100 p-6 hover:shadow-md hover:border-brand-300 transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-lg bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 mb-4">
+<span class="material-symbols-outlined text-[28px]" data-icon="replay">replay</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 mb-2">
+              30 ngày đổi trả
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 leading-relaxed">
+              Trải nghiệm dùng thử 1 đổi 1 tận nơi nếu phát sinh bất kỳ lỗi nào từ nhà sản xuất.
+            </p>
+</div>
+<span class="mt-4 pt-3 border-t border-brand-100 text-xs font-semibold text-brand-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check</span> Thủ Tục Đổi Trong 10 Phút
+          </span>
+</div>
+<!-- Perk 4 -->
+<div class="bg-white rounded-xl border border-brand-100 p-6 hover:shadow-md hover:border-brand-300 transition-all duration-200 flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-lg bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 mb-4">
+<span class="material-symbols-outlined text-[28px]" data-icon="payments">payments</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-stone-900 mb-2">
+              Thanh toán COD
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 leading-relaxed">
+              Nhận hàng, mở hộp kiểm tra đầy đủ tem mác và phụ kiện trước khi thanh toán cho shipper.
+            </p>
+</div>
+<span class="mt-4 pt-3 border-t border-brand-100 text-xs font-semibold text-brand-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check</span> Đồng Kiểm Khi Nhận
+          </span>
+</div>
+</div>
+</section>
+<!-- Conversion & Quick Order Form Section -->
+<section class="bg-brand-50/50 py-space-xl border-t border-brand-100" id="order-now">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="text-center max-w-2xl mx-auto mb-10">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-brand-700 font-bold bg-brand-100 px-3 py-1 rounded-full border border-brand-200">
+            Đặt Hàng Nhanh - Không Cần Đăng Ký
+          </span>
+<h2 class="font-headline-lg text-headline-lg font-bold text-stone-900 mt-2">
+            Đăng Ký Nhận Giá Ưu Đãi Hôm Nay
+          </h2>
+<p class="font-body-md text-body-md text-stone-600">
+            Chuyên viên tư vấn sẽ liên hệ lại xác nhận địa chỉ và áp dụng voucher giảm giá ngay lập tức.
+          </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Package summary & Pricing -->
+<div class="lg:col-span-5 bg-white rounded-xl border border-brand-100 p-6 lg:p-8 shadow-sm">
+<div class="flex items-center gap-4 pb-6 border-b border-brand-100">
+<div class="w-20 h-20 rounded-lg bg-brand-50 overflow-hidden flex-shrink-0 border border-brand-100">
+<img class="w-full h-full object-cover" data-alt="Square e-commerce product thumbnail showing premium electronic device with crisp studio lighting, reflections, and official warranty stamp for cart summary." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtVeH-yIEHS-ViJbANpdZrBzC0T_udT8yGwP1TWJOxHvE3-hWjavYAw4-XJQxst96_IuNMwQockr5_J0AgfUTIlvlw6lFtNJdlH-M8_wO_FGQT1R8JBKQkUaTD-R8bdXSqVoV3dBdtGRRvvFplUeNp1N3Kvi7vIrlGpPRXo7tHfAhXxzZtLwf81Z99MiDkw2qVPOreA1fX5Fd6LyAKAcMlz1coYIRkAns33ej1hDI"/>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm font-bold text-stone-900">{{data.brand_name}} Flagship Edition</h4>
+<p class="text-xs text-stone-500 mt-1">Mã sản phẩm: SKU-8849-VN</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded font-semibold border border-brand-100">Bảo hành 2 năm</span>
+<span class="text-xs text-stone-400">Tặng túi da cao cấp</span>
+</div>
+</div>
+</div>
+<!-- Price Breakdown -->
+<div class="py-6 border-b border-brand-100 space-y-3">
+<div class="flex justify-between items-baseline">
+<span class="font-body-md text-body-md text-stone-600">Giá niêm yết:</span>
+<span class="line-through text-stone-400 font-medium">{{data.original_price}}</span>
+</div>
+<div class="flex justify-between items-baseline">
+<span class="font-body-md text-body-md text-stone-600">Ưu đãi Flash Sale:</span>
+<span class="text-brand-600 font-semibold">-{{data.discount_percent}}</span>
+</div>
+<div class="flex justify-between items-baseline">
+<span class="font-body-md text-body-md text-stone-600">Phí vận chuyển COD:</span>
+<span class="text-emerald-600 font-semibold">Miễn phí 0đ</span>
+</div>
+<div class="pt-3 border-t border-brand-100 flex justify-between items-center">
+<div>
+<span class="font-headline-sm text-headline-sm font-bold text-stone-900 block">Giá Thanh Toán:</span>
+<span class="inline-block px-2 py-0.5 rounded bg-brand-100 text-brand-700 text-[11px] font-bold mt-1 border border-brand-200">
+                    Tiết kiệm {{data.discount_percent}}
+                  </span>
+</div>
+<div class="text-right">
+<span class="font-headline-lg text-headline-lg font-extrabold text-brand-600">{{data.sale_price}}</span>
+</div>
+</div>
+</div>
+<!-- Value Guarantees list -->
+<div class="pt-6 space-y-3 text-xs text-stone-600">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-600 text-[18px]">verified</span>
+<span>Cam kết đền bù 200% nếu phát hiện hàng giả, hàng nhái</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-600 text-[18px]">lock</span>
+<span>Thông tin cá nhân được mã hóa bảo mật theo chuẩn SSL 256-bit</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-600 text-[18px]">cached</span>
+<span>Hỗ trợ kiểm tra hàng thoải mái trước khi chuyển tiền</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Clean Order Form -->
+<div class="lg:col-span-7 bg-white rounded-xl border border-brand-100 p-6 lg:p-8 shadow-sm">
+<h3 class="font-headline-sm text-headline-sm font-bold text-stone-900 mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-600" data-icon="edit_note">edit_note</span>
+              Thông Tin Giao Hàng &amp; Đặt Hàng
+            </h3>
+<p class="font-body-sm text-body-sm text-stone-600 mb-6">
+              Vui lòng điền thông tin chính xác để bưu tá giao hàng thuận tiện nhất.
+            </p>
+<form class="space-y-4" onsubmit="event.preventDefault(); alert('Cảm ơn bạn! Đơn hàng của bạn đang được xử lý.');">
+<!-- Color/Variant Selector -->
+<div>
+<label class="block font-label-md text-label-md text-stone-900 mb-2">Chọn phiên bản / màu sắc:</label>
+<div class="grid grid-cols-3 gap-3">
+<label class="relative flex items-center p-3 rounded-lg border-2 border-brand-600 bg-brand-50/40 cursor-pointer">
+<input checked="" class="text-brand-600 focus:ring-brand-600 h-4 w-4 mr-2" name="variant" type="radio"/>
+<span class="text-xs font-semibold text-stone-900">Ruby Red (Bán chạy)</span>
+</label>
+<label class="relative flex items-center p-3 rounded-lg border border-brand-100 bg-white hover:border-brand-300 cursor-pointer">
+<input class="text-brand-600 focus:ring-brand-600 h-4 w-4 mr-2" name="variant" type="radio"/>
+<span class="text-xs font-semibold text-stone-900">Pearl White</span>
+</label>
+<label class="relative flex items-center p-3 rounded-lg border border-brand-100 bg-white hover:border-brand-300 cursor-pointer">
+<input class="text-brand-600 focus:ring-brand-600 h-4 w-4 mr-2" name="variant" type="radio"/>
+<span class="text-xs font-semibold text-stone-900">Space Grey</span>
+</label>
+</div>
+</div>
+<!-- Quantity Selector -->
+<div>
+<label class="block font-label-md text-label-md text-stone-900 mb-2">Số lượng:</label>
+<div class="inline-flex items-center border border-brand-200 rounded-lg p-1 bg-white">
+<button onclick="document.getElementById('qty').value++" type="button">+</button>
+<input class="w-12 text-center border-none focus:ring-0 font-semibold p-0 text-sm text-stone-900" id="qty" max="10" min="1" type="number" value="1"/>
+<button class="w-8 h-8 rounded flex items-center justify-center hover:bg-brand-50 font-bold text-stone-700" onclick="let input = document.getElementById('qty'); input.value++;" type="button">+</button>
+</div>
+</div>
+<!-- Name & Phone Fields -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="block font-label-md text-label-md text-stone-900 mb-1.5" for="full-name">Họ và tên người nhận *</label>
+<input class="w-full h-11 px-3.5 rounded-lg border border-brand-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 text-body-md text-stone-900 bg-white transition-colors placeholder:text-stone-400" id="full-name" placeholder="Ví dụ: Nguyễn Văn A" required="" type="text"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-stone-900 mb-1.5" for="phone">Số điện thoại liên hệ *</label>
+<input class="w-full h-11 px-3.5 rounded-lg border border-brand-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 text-body-md text-stone-900 bg-white transition-colors placeholder:text-stone-400" id="phone" placeholder="Ví dụ: 0987 654 321" required="" type="tel"/>
+</div>
+</div>
+<!-- Address Details -->
+<div>
+<label class="block font-label-md text-label-md text-stone-900 mb-1.5" for="address">Địa chỉ nhận hàng (Số nhà, Tên đường, Phường/Xã) *</label>
+<input class="w-full h-11 px-3.5 rounded-lg border border-brand-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 text-body-md text-stone-900 bg-white transition-colors placeholder:text-stone-400" id="address" placeholder="Ví dụ: 124 Hoàng Hoa Thám, Phường 12, Quận Tân Bình" required="" type="text"/>
+</div>
+<!-- City / Province -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="block font-label-md text-label-md text-stone-900 mb-1.5" for="city">Tỉnh / Thành phố *</label>
+<select class="w-full h-11 px-3.5 rounded-lg border border-brand-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 text-body-md text-stone-900 bg-white transition-colors" id="city" required="">
+<option value="">Chọn Tỉnh / Thành phố</option>
+<option value="HN">Hà Nội</option>
+<option value="HCM">TP. Hồ Chí Minh</option>
+<option value="DN">Đà Nẵng</option>
+<option value="HP">Hải Phòng</option>
+<option value="BD">Bình Dương</option>
+<option value="OTHER">Tỉnh thành khác...</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-stone-900 mb-1.5" for="note">Ghi chú giao hàng (nếu có)</label>
+<input class="w-full h-11 px-3.5 rounded-lg border border-brand-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 text-body-md text-stone-900 bg-white transition-colors placeholder:text-stone-400" id="note" placeholder="Giao trong giờ hành chính..." type="text"/>
+</div>
+</div>
+<!-- Payment Method Selector -->
+<div class="pt-2">
+<label class="block font-label-md text-label-md text-stone-900 mb-2">Phương thức thanh toán:</label>
+<div class="flex items-center gap-3 p-3 rounded-lg border border-brand-200 bg-brand-50/50">
+<input checked="" class="text-brand-600 focus:ring-brand-600 h-4 w-4" name="payment" type="radio"/>
+<div class="flex items-center justify-between w-full">
+<span class="text-sm font-semibold text-stone-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-600 text-[20px]">local_shipping</span>
+                      Thanh toán khi nhận hàng (COD toàn quốc)
+                    </span>
+<span class="text-xs text-brand-700 font-semibold bg-brand-100 px-2 py-0.5 rounded">Khuyên dùng</span>
+</div>
+</div>
+</div>
+<!-- Big Confirm Button (High Conversion Dynamic Brand Primary) -->
+<div class="pt-4">
+<button class="w-full bg-brand-600 hover:bg-brand-700 text-white font-label-md text-label-md h-12 rounded-lg font-bold shadow-md hover:shadow-lg transition-all duration-150 flex items-center justify-center gap-2 active:scale-[0.98]" type="submit">
+<span>XÁC NHẬN ĐẶT HÀNG NGAY</span>
+<span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span>
+</button>
+<p class="text-center text-xs text-stone-400 mt-2.5">
+                  Bằng việc đặt hàng, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của {{data.brand_name}}.
+                </p>
+</div>
+</form>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof & Customer Reviews -->
+<section class="max-w-7xl mx-auto px-margin py-space-xl" id="reviews">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-brand-700 font-bold bg-brand-100 px-3 py-1 rounded-full border border-brand-200">
+            Khách Hàng Thực Tế
+          </span>
+<h2 class="font-headline-lg text-headline-lg font-bold text-stone-900 mt-3">
+            Hơn 12,000+ Khách Hàng Đã Tin Dùng
+          </h2>
+<p class="font-body-md text-body-md text-stone-600 mt-1">
+            Đánh giá minh bạch từ những người mua đã nhận và kiểm tra hàng thực tế.
+          </p>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-3 bg-white p-3 rounded-lg border border-brand-100 shadow-sm">
+<div class="text-center px-2 border-r border-brand-100">
+<div class="text-2xl font-bold text-brand-600">4.9</div>
+<div class="text-[10px] text-stone-400 uppercase font-semibold">Trung bình</div>
+</div>
+<div class="flex flex-col">
+<div class="flex text-amber-500">
+<span class="material-symbols-outlined fill text-[16px]">star</span>
+<span class="material-symbols-outlined fill text-[16px]">star</span>
+<span class="material-symbols-outlined fill text-[16px]">star</span>
+<span class="material-symbols-outlined fill text-[16px]">star</span>
+<span class="material-symbols-outlined fill text-[16px]">star</span>
+</div>
+<span class="text-xs text-stone-600">Từ 1,842 lượt xếp hạng</span>
+</div>
+</div>
+</div>
+<!-- Reviews Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Review 1 -->
+<div class="bg-white rounded-xl border border-brand-100 p-6 shadow-sm hover:shadow-md hover:border-brand-200 transition-all">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 overflow-hidden flex items-center justify-center font-bold">
+                HA
+              </div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-stone-900 flex items-center gap-1">
+                  Hoàng Anh
+                  <span class="material-symbols-outlined fill text-brand-600 text-[16px]">verified</span>
+</h4>
+<p class="text-xs text-stone-400">Hà Nội • Đã mua 2 ngày trước</p>
+</div>
+</div>
+<span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-100">Đã mua hàng</span>
+</div>
+<div class="flex text-amber-500 mb-3">
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+</div>
+<p class="font-body-sm text-body-sm text-stone-600 leading-relaxed mb-4">
+            "Sản phẩm chuẩn xịn, đóng gói cực kỳ cẩn thận với 2 lớp chống sốc. Giao từ TP.HCM ra Hà Nội mất chưa đầy 48 tiếng. Đúng hàng chính hãng tem phụ đầy đủ, dùng mượt mà."
+          </p>
+<div class="text-xs text-stone-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">thumb_up</span>
+            Hữu ích (28)
+          </div>
+</div>
+<!-- Review 2 -->
+<div class="bg-white rounded-xl border border-brand-100 p-6 shadow-sm hover:shadow-md hover:border-brand-200 transition-all">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 overflow-hidden flex items-center justify-center font-bold">
+                MT
+              </div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-stone-900 flex items-center gap-1">
+                  Minh Tuấn
+                  <span class="material-symbols-outlined fill text-brand-600 text-[16px]">verified</span>
+</h4>
+<p class="text-xs text-stone-400">Đà Nẵng • Đã mua 1 tuần trước</p>
+</div>
+</div>
+<span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-100">Đã mua hàng</span>
+</div>
+<div class="flex text-amber-500 mb-3">
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+</div>
+<p class="font-body-sm text-body-sm text-stone-600 leading-relaxed mb-4">
+            "Rất thích chính sách cho mở hộp kiểm tra rồi mới trả tiền COD. Chăm sóc khách hàng nhiệt tình hướng dẫn kích hoạt bảo hành qua mã QR chỉ mất 1 phút."
+          </p>
+<div class="text-xs text-stone-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">thumb_up</span>
+            Hữu ích (19)
+          </div>
+</div>
+<!-- Review 3 -->
+<div class="bg-white rounded-xl border border-brand-100 p-6 shadow-sm hover:shadow-md hover:border-brand-200 transition-all">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 overflow-hidden flex items-center justify-center font-bold">
+                TL
+              </div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-stone-900 flex items-center gap-1">
+                  Thùy Linh
+                  <span class="material-symbols-outlined fill text-brand-600 text-[16px]">verified</span>
+</h4>
+<p class="text-xs text-stone-400">TP. Hồ Chí Minh • Đã mua 3 ngày trước</p>
+</div>
+</div>
+<span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-100">Đã mua hàng</span>
+</div>
+<div class="flex text-amber-500 mb-3">
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+<span class="material-symbols-outlined fill text-[18px]">star</span>
+</div>
+<p class="font-body-sm text-body-sm text-stone-600 leading-relaxed mb-4">
+            "Săn được đợt Flash sale giảm tới {{data.discount_percent}} thật sự hời. Màu sắc bên ngoài nhìn còn đẹp và sang trọng hơn trong ảnh chụp. 10 điểm cho shop!"
+          </p>
+<div class="text-xs text-stone-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">thumb_up</span>
+            Hữu ích (34)
+          </div>
+</div>
+</div>
+</section>
+<!-- Connect & Social Media Hub -->
+<section class="bg-brand-50/40 py-space-xl border-t border-brand-100">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="text-center max-w-xl mx-auto mb-8">
+<h3 class="font-headline-sm text-headline-sm font-bold text-stone-900">
+            Kết Nối Cộng Đồng {{data.brand_name}}
+          </h3>
+<p class="font-body-sm text-body-sm text-stone-600 mt-1">
+            Theo dõi kênh thông tin chính thức để nhận mẹo sử dụng và voucher tri ân hàng tháng.
+          </p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Facebook -->
+<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_facebook}}">
+<div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined">public</span>
+</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">Facebook Fanpage</div>
+<div class="text-xs text-stone-400">120K Followers</div>
+</div>
+</a>
+<!-- TikTok -->
+<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_tiktok}}">
+<div class="w-10 h-10 rounded-lg bg-stone-100 text-stone-900 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined">music_video</span>
+</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">TikTok Channel</div>
+<div class="text-xs text-stone-400">250K Followers</div>
+</div>
+</a>
+<!-- Zalo OA -->
+<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_zalo}}">
+<div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">Zalo Official</div>
+<div class="text-xs text-stone-400">Hỗ trợ 24/7</div>
+</div>
+</a>
+<!-- Instagram -->
+<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_instagram}}">
+<div class="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center font-bold">
+<span class="material-symbols-outlined">photo_camera</span>
+</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">Instagram</div>
+<div class="text-xs text-stone-400">Lookbook &amp; Tips</div>
+</div>
+</a>
+</div>
+</div>
+</section>
+</main>
+<!-- Shared Footer Component -->
+<footer class="bg-white full-width border-t border-brand-100">
+<div class="w-full max-w-7xl mx-auto px-margin py-space-xl flex flex-col md:flex-row justify-between items-center gap-space-md">
+<!-- Brand & Copyright -->
+<div class="flex flex-col sm:flex-row items-center gap-3">
+<span class="font-headline-sm text-headline-sm font-bold text-brand-600">
+          {{data.brand_name}}
+        </span>
+<span class="hidden sm:inline text-stone-300">•</span>
+<p class="font-body-sm text-body-sm text-stone-500 text-center sm:text-left">
+          © 2025 {{data.brand_name}}. All rights reserved. 100% Guaranteed Satisfaction.
+        </p>
+</div>
+<!-- Links -->
+<div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-label-sm text-label-sm">
+<a class="text-stone-600 hover:text-brand-600 hover:underline transition-all duration-150" href="#terms">Terms of Service</a>
+<a class="text-stone-600 hover:text-brand-600 hover:underline transition-all duration-150" href="#privacy">Privacy Policy</a>
+<a class="text-stone-600 hover:text-brand-600 hover:underline transition-all duration-150" href="#return">Return Policy</a>
+<a class="text-brand-600 font-semibold hover:underline transition-all duration-150" href="#guarantee">Guarantee &amp; Warranty</a>
+<a class="text-stone-600 hover:text-brand-600 hover:underline transition-all duration-150" href="#support">Contact Support</a>
+</div>
+</div>
+</footer>
+<!-- Inline Script for Millisecond Flash Countdown Micro-interaction -->
+<script>
+    (function () {
+      let hours = 2;
+      let minutes = 43;
+      let seconds = 19;
+      let millis = 99;
+
+      const elHours = document.getElementById('timer-hours');
+      const elMinutes = document.getElementById('timer-minutes');
+      const elSeconds = document.getElementById('timer-seconds');
+      const elMillis = document.getElementById('timer-millis');
+
+      setInterval(function () {
+        millis -= 3;
+        if (millis < 0) {
+          millis = 99;
+          seconds--;
+          if (seconds < 0) {
+            seconds = 59;
+            minutes--;
+            if (minutes < 0) {
+              minutes = 59;
+              hours--;
+              if (hours < 0) {
+                hours = 0;
+                minutes = 0;
+                seconds = 0;
+                millis = 0;
+              }
+            }
+          }
+        }
+        if (elHours) elHours.textContent = hours.toString().padStart(2, '0');
+        if (elMinutes) elMinutes.textContent = minutes.toString().padStart(2, '0');
+        if (elSeconds) elSeconds.textContent = seconds.toString().padStart(2, '0');
+        if (elMillis) elMillis.textContent = millis.toString().padStart(2, '0');
+      }, 30);
+    })();
+  </script>
+</body></html>

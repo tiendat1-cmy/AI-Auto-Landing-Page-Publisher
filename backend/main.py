@@ -5,6 +5,7 @@ from api.auth import router as auth_router
 from api.versions import router as versions_router
 from core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
+from api.projects import router as projects_router
 
 
 
@@ -23,6 +24,7 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(versions_router)
+app.include_router(projects_router)
 
 @app.get("/")
 async def home(request: Request):

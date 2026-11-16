@@ -11,7 +11,7 @@ class Settings:
     DB_HOST: str = os.getenv("DB_HOST", "localhost")
     DB_PORT: int = int(os.getenv("DB_PORT", 3306))
     DB_USER: str = os.getenv("DB_USER", "root")
-    DB_PASSWORD: str = os.getenv("DB_PASSWORD", "")
+    DB_PASSWORD: str = os.getenv("DB_PASSWORD", "booiscareyou")
     DB_NAME: str = os.getenv("DB_NAME", "landing_page_db")
     
     # Third-party API Keys

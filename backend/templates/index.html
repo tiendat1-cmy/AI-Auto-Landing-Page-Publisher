@@ -22,10 +22,18 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Kiểm Tra Kết Nối Hệ Thống Local</h2>
         <p class="text-gray-600 mb-6">Nhấn nút bên dưới để thực hiện gọi API kiểm tra từ Client tới Backend FastAPI.</p>
 
-        <!-- Call API Button -->
-        <button id="btn-test" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 shadow">
-            Gọi API /api/health
-        </button>
+        <div class="flex flex-wrap gap-3">
+            <!-- Call API Button -->
+            <button id="btn-test" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 shadow">
+                Gọi API /api/health
+            </button>
+            <a href="/frontend/pages/edit-project.html?project_id=1" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 shadow flex items-center gap-2">
+                ✏️ Form Chỉnh Sửa Landing Page
+            </a>
+            <a href="/docs" target="_blank" class="bg-slate-700 hover:bg-slate-800 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 shadow">
+                Swagger API /docs
+            </a>
+        </div>
 
         <!-- API Result Container -->
         <div id="result-box" class="mt-6 hidden p-4 rounded-lg bg-slate-50 border border-slate-200">

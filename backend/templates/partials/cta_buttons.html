@@ -1,0 +1,125 @@
+{#
+  Component CTA (Call-to-Action) dùng chung cho toàn bộ Landing Page Templates.
+  Tự động hiển thị động 5 kênh: Messenger, TikTok Shop, Zalo, Instagram, Hotline.
+  Quy tắc nghiêm ngặt:
+  - Có dữ liệu: hiển thị nút với link chuẩn hóa an toàn (HTTPS/tel).
+  - Không có dữ liệu: ẩn hoàn toàn nút, không để lại khoảng trống thừa.
+  - Nếu cả 5 kênh đều trống: không render khu vực này.
+#}
+
+{% set cta_obj = cta if cta is defined and cta else (data.cta if data is defined and data.cta is defined else None) %}
+
+{# Nếu đã có đối tượng cta được chuẩn hóa thì ưu tiên dùng cta_obj #}
+{% if cta_obj %}
+  {% set m_link = cta_obj.messenger_link %}
+  {% set tt_link = cta_obj.tiktok_shop_link %}
+  {% set z_link = cta_obj.zalo_link %}
+  {% set ig_link = cta_obj.instagram_link %}
+  {% set hl_display = cta_obj.hotline %}
+  {% set hl_href = cta_obj.hotline_href %}
+{% else %}
+  {% set m_link = data.messenger_link.strip() if data is defined and data.messenger_link and data.messenger_link.strip() else None %}
+  {% set tt_link = data.tiktok_shop_link.strip() if data is defined and data.tiktok_shop_link and data.tiktok_shop_link.strip() else None %}
+  {% set z_link = data.zalo_link.strip() if data is defined and data.zalo_link and data.zalo_link.strip() else None %}
+  {% set ig_link = data.instagram_link.strip() if data is defined and data.instagram_link and data.instagram_link.strip() else None %}
+  {% set hl_display = data.hotline.strip() if data is defined and data.hotline and data.hotline.strip() else None %}
+  {% set hl_href = 'tel:' ~ hl_display if hl_display else None %}
+{% endif %}
+
+{% set has_cta = (m_link or tt_link or z_link or ig_link or hl_display) %}
+
+{% if has_cta %}
+<div class="cta-dynamic-section w-full py-6 sm:py-8 my-6">
+  <div class="max-w-5xl mx-auto px-4">
+    <div class="text-center mb-6">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-500/10 text-brand-600 border border-brand-500/20 mb-2">
+        Hỗ Trợ &amp; Mua Hàng Trực Tiếp
+      </span>
+      <h3 class="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
+        Kết Nối Nhanh Với Chúng Tôi
+      </h3>
+      <p class="text-xs sm:text-sm text-stone-500 mt-1 max-w-md mx-auto">
+        Chọn kênh liên hệ tiện lợi nhất cho bạn để được tư vấn và nhận ưu đãi độc quyền.
+      </p>
+    </div>
+
+    <!-- Danh sách nút CTA động (Flex wrap tự co giãn, không để khoảng trống thừa) -->
+    <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+      
+      {# 1. Messenger #}
+      {% if m_link %}
+      <a 
+        href="{{ m_link }}" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="cta-btn cta-messenger group inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-[#0084FF] hover:bg-[#0073e6] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+      >
+        <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.03 2 11c0 2.87 1.48 5.43 3.79 7.08V22l3.69-2.03c.8.22 1.65.34 2.52.34 5.52 0 10-4.03 10-9s-4.48-9-10-9zm1.09 12.16l-2.55-2.72-4.98 2.72 5.48-5.82 2.61 2.72 4.92-2.72-5.48 5.82z"/>
+        </svg>
+        <span>Chat Messenger</span>
+      </a>
+      {% endif %}
+
+      {# 2. TikTok Shop #}
+      {% if tt_link %}
+      <a 
+        href="{{ tt_link }}" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="cta-btn cta-tiktok group inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-black hover:bg-stone-800 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+      >
+        <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.4a6.33 6.33 0 0 0-8.24 6.01 6.33 6.33 0 0 0 6.33 6.34 6.33 6.33 0 0 0 6.33-6.34V8.71a8.17 8.17 0 0 0 4.83 1.57V6.84c-.01-.05-.03-.1-.04-.15z"/>
+        </svg>
+        <span>TikTok Shop</span>
+      </a>
+      {% endif %}
+
+      {# 3. Zalo #}
+      {% if z_link %}
+      <a 
+        href="{{ z_link }}" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="cta-btn cta-zalo group inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-[#0068FF] hover:bg-[#005ce6] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+      >
+        <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+          <path d="M12 3C6.477 3 2 6.944 2 11.808c0 2.83 1.523 5.367 3.916 6.985l-.946 3.447a.5.5 0 0 0 .68.587l3.967-1.782c.767.18 1.57.278 2.383.278 5.523 0 10-3.944 10-8.707C22 6.944 17.523 3 12 3zm-3.2 12.5h-2.5a.7.7 0 0 1-.7-.7v-5.6a.7.7 0 0 1 .7-.7h2.5a.7.7 0 0 1 0 1.4h-1.8v1.4h1.5a.7.7 0 0 1 0 1.4h-1.5v1.4h1.8a.7.7 0 0 1 0 1.4zm5.5 0h-1.6l-2-3.3v3.3a.7.7 0 0 1-1.4 0V9.2a.7.7 0 0 1 .7-.7h1.6l2 3.3V8.5a.7.7 0 0 1 1.4 0v6.3a.7.7 0 0 1-.7.7z"/>
+        </svg>
+        <span>Zalo Official</span>
+      </a>
+      {% endif %}
+
+      {# 4. Instagram #}
+      {% if ig_link %}
+      <a 
+        href="{{ ig_link }}" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="cta-btn cta-instagram group inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+      >
+        <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+        <span>Instagram</span>
+      </a>
+      {% endif %}
+
+      {# 5. Hotline #}
+      {% if hl_display and hl_href %}
+      <a 
+        href="{{ hl_href }}" 
+        class="cta-btn cta-hotline group inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+      >
+        <svg class="w-5 h-5 fill-current shrink-0 animate-pulse" viewBox="0 0 24 24">
+          <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+        <span>Hotline: {{ hl_display }}</span>
+      </a>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endif %}

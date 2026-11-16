@@ -6,6 +6,7 @@ Cung cấp hai endpoint:
 """
 
 import logging
+from typing import Optional
 from fastapi import APIRouter, Depends, Path, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
@@ -146,11 +147,28 @@ async def get_template(
 )
 async def preview_template(
     id: int = Path(..., gt=0, description="ID của Template cần xem trước", examples=[1]),
+    messenger_link: Optional[str] = None,
+    tiktok_shop_link: Optional[str] = None,
+    zalo_link: Optional[str] = None,
+    instagram_link: Optional[str] = None,
+    hotline: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     """Render HTML thực tế của một Template để hiển thị trực tiếp trong iframe."""
     try:
-        html_content = render_template_preview(db, id)
+        custom_data = None
+        # Kiểm tra nếu có truyền bất kỳ tham số CTA nào
+        cta_params = {
+            "messenger_link": messenger_link,
+            "tiktok_shop_link": tiktok_shop_link,
+            "zalo_link": zalo_link,
+            "instagram_link": instagram_link,
+            "hotline": hotline,
+        }
+        if any(v is not None for v in cta_params.values()):
+            custom_data = cta_params
+
+        html_content = render_template_preview(db, id, custom_data=custom_data)
         if html_content is None:
             return JSONResponse(
                 status_code=status.HTTP_404_NOT_FOUND,

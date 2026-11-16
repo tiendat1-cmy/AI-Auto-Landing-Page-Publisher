@@ -77,6 +77,7 @@ def init_database():
             # 5. Seed 3 mẫu template chuẩn theo đặc tả
             sample_templates = [
                 (
+                    1,
                     "Modern Tech Gadget",
                     "Giao diện Dark-mode hiện đại, tập trung làm nổi bật tính năng sản phẩm công nghệ bằng các khối lưới (Grid) tinh tế.",
                     "/static/thumbnails/modern_tech.jpg",
@@ -90,6 +91,7 @@ def init_database():
                     ]),
                 ),
                 (
+                    2,
                     "Elegant Beauty & Care",
                     "Phong cách thanh lịch, tông màu pastel với bố cục ảnh lớn, tôn vinh hình ảnh và trải nghiệm cảm xúc của khách hàng.",
                     "/static/thumbnails/elegant_beauty.jpg",
@@ -101,6 +103,7 @@ def init_database():
                     ]),
                 ),
                 (
+                    3,
                     "Trust Consulting & Course",
                     "Giao diện chuyên nghiệp, tập trung vào nội dung thuyết phục, có khu vực riêng cho cam kết chất lượng và tiểu sử chuyên gia.",
                     "/static/thumbnails/trust_consulting.jpg",
@@ -112,9 +115,16 @@ def init_database():
                     ]),
                 ),
             ]
+            cursor.execute("DELETE FROM templates WHERE id NOT IN (1, 2, 3);")
             seed_templates_query = """
-            REPLACE INTO templates (name, description, thumbnail_url, file_path, placeholders)
-            VALUES (%s, %s, %s, %s, %s);
+            INSERT INTO templates (id, name, description, thumbnail_url, file_path, placeholders)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                name = VALUES(name),
+                description = VALUES(description),
+                thumbnail_url = VALUES(thumbnail_url),
+                file_path = VALUES(file_path),
+                placeholders = VALUES(placeholders);
             """
             cursor.executemany(seed_templates_query, sample_templates)
             print("Seeded 3 sample templates into 'templates' table.")
@@ -131,6 +141,11 @@ def init_database():
                 price DECIMAL(12,2) NULL,
                 image_url VARCHAR(500) NULL,
                 color_theme VARCHAR(50) NULL,
+                messenger_link VARCHAR(500) NULL,
+                tiktok_shop_link VARCHAR(500) NULL,
+                zalo_link VARCHAR(500) NULL,
+                instagram_link VARCHAR(500) NULL,
+                hotline VARCHAR(50) NULL,
                 facebook_url VARCHAR(500) NULL,
                 tiktok_url VARCHAR(500) NULL,
                 instagram_url VARCHAR(500) NULL,

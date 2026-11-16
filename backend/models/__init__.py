@@ -8,6 +8,7 @@ from models.generation import (
     Generation,
 )
 from models.project import Project
+from models.template import Template
 
 configure_mappers()
 
@@ -18,4 +19,5 @@ __all__ = [
     "STATUS_SUCCESS",
     "Generation",
     "Project",
+    "Template",
 ]

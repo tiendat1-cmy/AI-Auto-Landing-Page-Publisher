@@ -142,10 +142,12 @@
 </nav>
 </div>
 <div class="flex items-center gap-space-md">
-<a class="hidden sm:flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="tel:18008888">
+{% if data.hotline or (cta and cta.hotline) %}
+<a class="hidden sm:flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="{{ data.hotline_href or ('tel:' ~ (data.hotline or cta.hotline)) }}">
 <span class="material-symbols-outlined text-sm" data-icon="call">call</span>
-<span>Hotline: 1800 8888</span>
+<span>Hotline: {{ data.hotline or cta.hotline }}</span>
 </a>
+{% endif %}
 <a class="inline-flex items-center justify-center bg-primary text-on-primary font-label-md text-label-md px-space-md py-2.5 rounded-lg shadow-sm hover:opacity-95 active:scale-[0.98] transition-all" href="#checkout">
 <span class="material-symbols-outlined mr-1.5" data-icon="shopping_bag">shopping_bag</span>
           {{data.cta_text}}
@@ -579,39 +581,8 @@
 </div>
 </div>
 </section>
-<!-- 6. Community & Social Connect -->
-<section class="py-16 bg-surface-container-lowest border-t border-outline-variant">
-<div class="max-w-7xl mx-auto px-margin text-center">
-<h3 class="font-headline-md text-headline-md text-on-surface mb-2">
-        Kết Nối Cùng Cộng Đồng {{data.brand_name}}
-      </h3>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-xl mx-auto mb-8">
-        Cập nhật ưu đãi sớm nhất, chia sẻ trải nghiệm công nghệ và nhận quà tri ân độc quyền từ các kênh truyền thông chính thức.
-      </p>
-<div class="flex flex-wrap justify-center items-center gap-4">
-<!-- Facebook -->
-<a class="flex items-center gap-2.5 px-6 py-3 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container hover:border-primary transition-all text-on-surface font-label-md text-label-md" href="{{data.social_facebook}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-primary" data-icon="public">public</span>
-<span>Facebook</span>
-</a>
-<!-- TikTok -->
-<a class="flex items-center gap-2.5 px-6 py-3 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container hover:border-primary transition-all text-on-surface font-label-md text-label-md" href="{{data.social_tiktok}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-primary" data-icon="videocam">videocam</span>
-<span>TikTok</span>
-</a>
-<!-- Zalo -->
-<a class="flex items-center gap-2.5 px-6 py-3 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container hover:border-primary transition-all text-on-surface font-label-md text-label-md" href="{{data.social_zalo}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-primary" data-icon="chat">chat</span>
-<span>Zalo Official</span>
-</a>
-<!-- Instagram -->
-<a class="flex items-center gap-2.5 px-6 py-3 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container hover:border-primary transition-all text-on-surface font-label-md text-label-md" href="{{data.social_instagram}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-primary" data-icon="photo_camera">photo_camera</span>
-<span>Instagram</span>
-</a>
-</div>
-</div>
-</section>
+<!-- Dynamic CTA Buttons & Contact Hub -->
+{% include "partials/cta_buttons.html" %}
 <!-- 7. Footer (Shared Component Integration) -->
 <footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline full-width">
 <div class="w-full max-w-7xl mx-auto px-margin py-space-xl flex flex-col md:flex-row justify-between items-center gap-space-md">

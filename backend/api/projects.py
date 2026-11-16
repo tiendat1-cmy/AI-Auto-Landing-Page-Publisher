@@ -43,10 +43,12 @@ async def create_project(
             """
             INSERT INTO projects
             (user_id, template_id, campaign_name, product_name, product_description,
-             price, image_url, color_theme, facebook_url, tiktok_url, instagram_url, status)
+             price, image_url, color_theme, messenger_link, tiktok_shop_link, zalo_link, instagram_link, hotline,
+             facebook_url, tiktok_url, instagram_url, status)
             VALUES
             (:user_id, :template_id, :campaign_name, :product_name, :product_description,
-             :price, :image_url, :color_theme, :facebook_url, :tiktok_url, :instagram_url, 'draft')
+             :price, :image_url, :color_theme, :messenger_link, :tiktok_shop_link, :zalo_link, :instagram_link, :hotline,
+             :facebook_url, :tiktok_url, :instagram_url, 'draft')
             """
         ),
         {**payload.model_dump(), "user_id": current_user["id"]},
@@ -69,6 +71,7 @@ async def get_project_detail(
 
 
 @router.put("/{project_id}")
+@router.patch("/{project_id}")
 async def update_project(
     payload: ProjectUpdate,
     project: dict = Depends(get_owned_project),

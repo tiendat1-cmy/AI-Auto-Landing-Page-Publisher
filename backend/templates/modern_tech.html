@@ -178,13 +178,15 @@
 </nav>
 <!-- Trailing Actions -->
 <div class="flex items-center gap-4">
-<div class="hidden xl:flex items-center gap-2 text-stone-600 font-label-sm text-label-sm pr-2 border-r border-brand-100">
+{% if data.hotline or (cta and cta.hotline) %}
+<a href="{{ data.hotline_href or ('tel:' ~ (data.hotline or cta.hotline)) }}" class="hidden xl:flex items-center gap-2 text-stone-600 font-label-sm text-label-sm pr-2 border-r border-brand-100 hover:text-brand-600 transition">
 <span class="material-symbols-outlined text-brand-600 text-[20px]" data-icon="support_agent">support_agent</span>
 <div>
 <div class="text-xs text-stone-400 leading-tight">Hotline 24/7</div>
-<div class="font-bold text-stone-800 leading-tight">1900 8899</div>
+<div class="font-bold text-stone-800 leading-tight">{{ data.hotline or cta.hotline }}</div>
 </div>
-</div>
+</a>
+{% endif %}
 <a class="hidden sm:inline-flex items-center text-stone-600 hover:text-brand-600 font-label-md text-label-md transition-colors px-3 py-1.5 rounded-lg hover:bg-brand-50" href="#support">
           Support
         </a>
@@ -765,61 +767,8 @@
 </div>
 </div>
 </section>
-<!-- Connect & Social Media Hub -->
-<section class="bg-brand-50/40 py-space-xl border-t border-brand-100">
-<div class="max-w-7xl mx-auto px-margin">
-<div class="text-center max-w-xl mx-auto mb-8">
-<h3 class="font-headline-sm text-headline-sm font-bold text-stone-900">
-            Kết Nối Cộng Đồng {{data.brand_name}}
-          </h3>
-<p class="font-body-sm text-body-sm text-stone-600 mt-1">
-            Theo dõi kênh thông tin chính thức để nhận mẹo sử dụng và voucher tri ân hàng tháng.
-          </p>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-<!-- Facebook -->
-<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_facebook}}">
-<div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-<span class="material-symbols-outlined">public</span>
-</div>
-<div>
-<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">Facebook Fanpage</div>
-<div class="text-xs text-stone-400">120K Followers</div>
-</div>
-</a>
-<!-- TikTok -->
-<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_tiktok}}">
-<div class="w-10 h-10 rounded-lg bg-stone-100 text-stone-900 flex items-center justify-center font-bold">
-<span class="material-symbols-outlined">music_video</span>
-</div>
-<div>
-<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">TikTok Channel</div>
-<div class="text-xs text-stone-400">250K Followers</div>
-</div>
-</a>
-<!-- Zalo OA -->
-<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_zalo}}">
-<div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center font-bold">
-<span class="material-symbols-outlined">chat</span>
-</div>
-<div>
-<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">Zalo Official</div>
-<div class="text-xs text-stone-400">Hỗ trợ 24/7</div>
-</div>
-</a>
-<!-- Instagram -->
-<a class="bg-white hover:bg-brand-50/50 border border-brand-100 p-4 rounded-xl flex items-center gap-3 transition-all duration-150 group" href="{{data.social_instagram}}">
-<div class="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center font-bold">
-<span class="material-symbols-outlined">photo_camera</span>
-</div>
-<div>
-<div class="font-label-md text-label-md font-semibold text-stone-900 group-hover:text-brand-600 transition-colors">Instagram</div>
-<div class="text-xs text-stone-400">Lookbook &amp; Tips</div>
-</div>
-</a>
-</div>
-</div>
-</section>
+<!-- Dynamic CTA Buttons & Contact Hub -->
+{% include "partials/cta_buttons.html" %}
 </main>
 <!-- Shared Footer Component -->
 <footer class="bg-white full-width border-t border-brand-100">

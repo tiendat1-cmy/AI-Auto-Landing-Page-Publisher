@@ -520,39 +520,10 @@
 </div>
 </div>
 </section>
-<!-- Section: Social Channels & Community -->
-<section class="py-16 bg-surface-container-low border-t border-outline-variant/60" id="channels">
-<div class="max-w-7xl mx-auto px-margin text-center">
-<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">
-        Kênh Truyền Thông &amp; Cộng Đồng Sự Kiện
-      </h3>
-<p class="font-body-sm text-on-surface-variant max-w-xl mx-auto mb-8">
-        Cập nhật thông báo trực tiếp từ ban tổ chức {{data.brand_name}}, video phỏng vấn độc quyền và tài liệu hậu sự kiện:
-      </p>
-<div class="flex flex-wrap justify-center items-center gap-4">
-<!-- Facebook -->
-<a class="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface hover:text-primary hover:border-primary transition-all shadow-sm" href="{{data.social_facebook}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-blue-600 text-xl" data-icon="thumb_up">thumb_up</span>
-<span class="font-label-md text-sm">Facebook Event</span>
-</a>
-<!-- TikTok -->
-<a class="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface hover:text-primary hover:border-primary transition-all shadow-sm" href="{{data.social_tiktok}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-slate-900 text-xl" data-icon="movie">movie</span>
-<span class="font-label-md text-sm">TikTok Highlights</span>
-</a>
-<!-- Zalo -->
-<a class="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface hover:text-primary hover:border-primary transition-all shadow-sm" href="{{data.social_zalo}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-blue-500 text-xl" data-icon="chat">chat</span>
-<span class="font-label-md text-sm">Nhóm Zalo Hỗ Trợ</span>
-</a>
-<!-- Instagram -->
-<a class="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface hover:text-primary hover:border-primary transition-all shadow-sm" href="{{data.social_instagram}}" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-pink-600 text-xl" data-icon="photo_camera">photo_camera</span>
-<span class="font-label-md text-sm">Instagram Moments</span>
-</a>
+<!-- Dynamic CTA Buttons & Contact Hub -->
+<div id="channels">
+{% include "partials/cta_buttons.html" %}
 </div>
-</div>
-</section>
 <!-- Shared Component: Footer -->
 <footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline full-width">
 <div class="w-full max-w-7xl mx-auto px-margin py-space-xl flex flex-col md:flex-row justify-between items-center gap-space-md">

@@ -21,7 +21,7 @@
 - **Thông tin phiên bản mã nguồn:**
   - Git Branch: `feature/t02c118-tu-dien-meta-seo`
   - Commit ID: `6f59936`
-- **Ngày thực thi kiểm thử:** 22/11/2026
+- **Ngày thực thi kiểm thử:** 22/11/2026 (Cập nhật xác minh lại: 27/11/2026)
 - **Kỹ sư thực hiện:** Senior QA Engineer & Backend Python Engineer
 
 ---
@@ -34,6 +34,8 @@
 | **2. After Fix Run (Lần 2 - Sau Fix)** | 40 | 40 | 0 | 0 | **100.0%** | Toàn bộ 40 test cases vượt qua hoàn toàn |
 | **3. Regression: test_seo_meta.py** | 6 nhóm | 6 | 0 | 0 | **100.0%** | Kiểm tra 6/6 templates tích hợp thẻ SEO duy nhất |
 | **4. Regression: test_generate_index_html.py**| 22 checks | 22 | 0 | 0 | **100.0%** | Render file index.html xuất bản đạt chuẩn |
+| **5. Integration: test_sprint3_integration.py**| 47 checks | 47 | 0 | 0 | **100.0%** | Kiểm thử tích hợp Frontend + Backend (chạy 27/11/2026) |
+| **6. Offline: test_update_landing_page.py**| 12 checks | 6 | 0 | 6 (SKIP) | **100.0% offline** | 6 offline checks PASS; 6 DB checks SKIP do MySQL không kết nối từ sandbox |
 
 ### Phân bố kết quả theo loại Test Case (Sau Fix)
 

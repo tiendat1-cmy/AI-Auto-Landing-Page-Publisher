@@ -51,7 +51,7 @@
               </div>
               <h2 id="version-project-title" class="text-xl sm:text-2xl font-extrabold tracking-tight truncate">Đang tải dự án...</h2>
               <p class="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
-                Mỗi lần lưu hoặc khôi phục, hệ thống tạo một snapshot mới. Bạn có thể xem lại nội dung cũ và khôi phục bất kỳ phiên bản nào.
+                Mỗi lần lưu hoặc khôi phục, hệ thống tạo một snapshot mới. Khôi phục sẽ áp dụng lại nội dung lên dự án và cập nhật website (nếu đã xuất bản).
               </p>
             </div>
             <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -114,7 +114,7 @@
           <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h3 class="text-sm font-bold text-slate-900">Các phiên bản đã lưu</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Sắp xếp mới nhất trước. Nhấn “Khôi phục” để tạo phiên bản mới từ snapshot cũ.</p>
+              <p class="text-xs text-slate-400 mt-0.5">Sắp xếp mới nhất trước. Nhấn “Khôi phục” để áp dụng lại snapshot cũ lên dự án và tạo phiên bản mới.</p>
             </div>
             <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full">
               <i class="fa-solid fa-shield-halved text-indigo-500"></i>
@@ -171,13 +171,14 @@
         </div>
         <div class="p-6 space-y-5">
           <p class="text-sm text-slate-600 leading-relaxed">
-            Hệ thống sẽ tạo một phiên bản mới bằng nội dung của
-            <strong id="restore-version-label" class="text-slate-900">phiên bản này</strong>.
-            Phiên bản hiện tại không bị xóa khỏi lịch sử.
+            Hệ thống sẽ áp dụng nội dung của
+            <strong id="restore-version-label" class="text-slate-900">phiên bản này</strong>
+            lên dự án hiện tại, render lại HTML và cập nhật website GitHub Pages (nếu đã xuất bản).
+            Lịch sử cũ vẫn được giữ nguyên.
           </p>
           <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 leading-relaxed">
             <i class="fa-solid fa-circle-info mr-1.5"></i>
-            Bản khôi phục sẽ có số phiên bản mới và ghi chú “Khôi phục từ phiên bản …”.
+            Bản khôi phục sẽ có số phiên bản mới, ghi chú “Khôi phục từ phiên bản …” và commit SHA mới nếu push GitHub thành công.
           </div>
           <div class="flex flex-col sm:flex-row gap-2">
             <button type="button" id="btn-cancel-restore" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-bold transition">

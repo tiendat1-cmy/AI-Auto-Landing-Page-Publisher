@@ -151,7 +151,10 @@
     const sha = version.commit_sha || '';
     const shortSha = sha ? sha.slice(0, 7) : '—';
     const createdAt = formatDateTime(version.created_at);
-    const createdBy = version.created_by ? `#${version.created_by}` : '—';
+    const createdBy = formatCreator(version) || '—';
+    const creatorTitle = version.created_by_email
+      ? ` title="${escapeHtml(version.created_by_email)}"`
+      : '';
 
     const restoreButton = isLatest
       ? `
@@ -190,7 +193,7 @@
                 <span>${escapeHtml(shortSha)}</span>
                 ${sha ? '<i class="fa-regular fa-copy text-[10px]"></i>' : ''}
               </button>
-              <span class="inline-flex items-center gap-1.5">
+              <span class="inline-flex items-center gap-1.5"${creatorTitle}>
                 <i class="fa-regular fa-user"></i>
                 <span>Tạo bởi ${escapeHtml(createdBy)}</span>
               </span>
@@ -273,11 +276,22 @@
       $('restore-modal')?.classList.add('hidden');
 
       const newVersion = response?.new_version;
-      const message =
+      const warnings = Array.isArray(response?.warnings)
+        ? response.warnings.filter(Boolean)
+        : [];
+
+      let message =
         response?.message ||
         `Đã khôi phục từ phiên bản v${version.version_number}${newVersion ? `, tạo phiên bản v${newVersion.version_number}` : ''}.`;
+      if (warnings.length) {
+        message += ` Lưu ý: ${warnings.join(' ')}`;
+      }
 
-      window.showToast?.(message, 'success', 'Khôi phục thành công');
+      window.showToast?.(
+        escapeHtml(message),
+        warnings.length ? 'warning' : 'success',
+        warnings.length ? 'Khôi phục một phần' : 'Khôi phục thành công'
+      );
       await loadPage();
     } catch (error) {
       console.error('Lỗi khôi phục phiên bản:', error);
@@ -313,7 +327,7 @@
     modal.classList.remove('hidden');
 
     setText('detail-modal-title', `Chi tiết phiên bản v${version.version_number}`);
-    setText('detail-modal-meta', formatDateTime(version.created_at));
+    setText('detail-modal-meta', buildMetaLine(version));
     setText('detail-version-number', `v${version.version_number}`);
     setText('detail-commit-sha', version.commit_sha || '—');
     setText('detail-created-at', formatDateTime(version.created_at));
@@ -330,6 +344,7 @@
 
       const detail = response?.data || response || {};
       setText('detail-modal-title', `Chi tiết phiên bản v${detail.version_number || version.version_number}`);
+      setText('detail-modal-meta', buildMetaLine({ ...version, ...detail }));
       setText('detail-version-number', `v${detail.version_number || version.version_number}`);
       setText('detail-commit-sha', detail.commit_sha || '—');
       setText('detail-created-at', formatDateTime(detail.created_at || version.created_at));
@@ -379,6 +394,24 @@
   function setText(id, value) {
     const el = $(id);
     if (el) el.textContent = value ?? '—';
+  }
+
+  function formatCreator(version) {
+    if (!version) return '';
+    return (
+      version.created_by_name ||
+      version.created_by_email ||
+      (version.created_by ? `#${version.created_by}` : '')
+    );
+  }
+
+  function buildMetaLine(version) {
+    const parts = [];
+    const creator = formatCreator(version);
+    if (creator) parts.push(`Tạo bởi ${creator}`);
+    const createdAt = formatDateTime(version?.created_at);
+    if (createdAt && createdAt !== '—') parts.push(createdAt);
+    return parts.join(' • ') || '—';
   }
 
   function formatDateTime(value) {

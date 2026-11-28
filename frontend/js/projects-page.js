@@ -122,11 +122,11 @@
 
         const openAction = pagesUrl
           ? actionButton({
-              href: pagesUrl,
-              title: "Mở website đã xuất bản",
-              icon: "fa-arrow-up-right-from-square",
-              className: "border-emerald-200 text-emerald-600 hover:bg-emerald-50",
-            })
+            href: pagesUrl,
+            title: "Mở website đã xuất bản",
+            icon: "fa-arrow-up-right-from-square",
+            className: "border-emerald-200 text-emerald-600 hover:bg-emerald-50",
+          })
           : "";
 
         return `
@@ -144,18 +144,18 @@
             </td>
             <td class="py-4 px-4">${statusBadge(project.status)}</td>
             <td class="py-4 px-4">
-              ${
-                pagesUrl
-                  ? `<a href="${escapeHtml(pagesUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs font-mono text-indigo-600 hover:underline inline-flex items-center gap-1 max-w-[220px]">
+              ${pagesUrl
+            ? `<a href="${escapeHtml(pagesUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs font-mono text-indigo-600 hover:underline inline-flex items-center gap-1 max-w-[220px]">
                        <span class="truncate">${escapeHtml(pagesUrl.replace(/^https?:\/\//, ""))}</span>
                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px] shrink-0"></i>
                      </a>`
-                  : '<span class="text-xs text-slate-400">Chưa xuất bản</span>'
-              }
+            : '<span class="text-xs text-slate-400">Chưa xuất bản</span>'
+          }
             </td>
             <td class="py-4 px-4 text-right pr-6">
               <div class="flex items-center justify-end gap-1.5">
                 ${openAction}
+                ${actionButton({ href: `project-detail.html?id=${encodeURIComponent(project.id)}`, title: "Chi tiết", icon: "fa-circle-info", className: "border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50/50" })}
                 ${actionButton({ href: previewHref, title: "Xem trước", icon: "fa-eye", className: "border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50/50" })}
                 ${actionButton({ href: editHref, title: "Chỉnh sửa", icon: "fa-pen-to-square", className: "border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50/50" })}
                 ${actionButton({ href: deployHref, title: "Xuất bản lên GitHub Pages", icon: "fa-cloud-arrow-up", className: "border-indigo-200 text-indigo-600 hover:bg-indigo-50" })}

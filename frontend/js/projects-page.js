@@ -122,11 +122,11 @@
 
         const openAction = pagesUrl
           ? actionButton({
-            href: pagesUrl,
-            title: "Mở website đã xuất bản",
-            icon: "fa-arrow-up-right-from-square",
-            className: "border-emerald-200 text-emerald-600 hover:bg-emerald-50",
-          })
+              href: pagesUrl,
+              title: "Mở website đã xuất bản",
+              icon: "fa-arrow-up-right-from-square",
+              className: "border-emerald-200 text-emerald-600 hover:bg-emerald-50",
+            })
           : "";
 
         return `
@@ -144,13 +144,14 @@
             </td>
             <td class="py-4 px-4">${statusBadge(project.status)}</td>
             <td class="py-4 px-4">
-              ${pagesUrl
-            ? `<a href="${escapeHtml(pagesUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs font-mono text-indigo-600 hover:underline inline-flex items-center gap-1 max-w-[220px]">
+              ${
+                pagesUrl
+                  ? `<a href="${escapeHtml(pagesUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs font-mono text-indigo-600 hover:underline inline-flex items-center gap-1 max-w-[220px]">
                        <span class="truncate">${escapeHtml(pagesUrl.replace(/^https?:\/\//, ""))}</span>
                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px] shrink-0"></i>
                      </a>`
-            : '<span class="text-xs text-slate-400">Chưa xuất bản</span>'
-          }
+                  : '<span class="text-xs text-slate-400">Chưa xuất bản</span>'
+              }
             </td>
             <td class="py-4 px-4 text-right pr-6">
               <div class="flex items-center justify-end gap-1.5">

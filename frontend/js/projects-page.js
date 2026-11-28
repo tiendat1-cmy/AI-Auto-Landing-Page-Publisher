@@ -156,6 +156,7 @@
             <td class="py-4 px-4 text-right pr-6">
               <div class="flex items-center justify-end gap-1.5">
                 ${openAction}
+                ${actionButton({ href: `project-detail.html?id=${encodeURIComponent(project.id)}`, title: "Chi tiết", icon: "fa-circle-info", className: "border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50/50" })}
                 ${actionButton({ href: previewHref, title: "Xem trước", icon: "fa-eye", className: "border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50/50" })}
                 ${actionButton({ href: editHref, title: "Chỉnh sửa", icon: "fa-pen-to-square", className: "border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50/50" })}
                 ${actionButton({ href: deployHref, title: "Xuất bản lên GitHub Pages", icon: "fa-cloud-arrow-up", className: "border-indigo-200 text-indigo-600 hover:bg-indigo-50" })}

@@ -9,7 +9,9 @@ Endpoints:
 
 import pymysql
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
+from core.database import get_db
 from core.security import get_current_user, get_owned_project
 from schemas.version import (
     VersionCreateRequest,
@@ -17,11 +19,11 @@ from schemas.version import (
     VersionListItemResponse,
     VersionRestoreResponse,
 )
+from services.version_restore_service import restore_project_version
 from services.version_service import (
     create_version,
     get_version_detail,
     list_versions,
-    restore_version,
 )
 
 router = APIRouter(
@@ -143,44 +145,57 @@ async def api_restore_version(
     version_id: int,
     project: dict = Depends(get_owned_project),
     current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    """Khôi phục phiên bản cũ bằng cách tạo version mới copy snapshot.
+    """Khôi phục phiên bản cũ lên dự án hiện tại và website GitHub Pages.
 
-    Lịch sử cũ được giữ nguyên (Append-only). Version mới ghi rõ
-    ``change_summary = "Khôi phục từ phiên bản X"``.
+    Luồng xử lý:
+
+    1. Đọc snapshot ``json_content`` của version cũ.
+    2. Áp dụng lại các cột nội dung vào bảng ``projects``.
+    3. Render lại HTML từ dữ liệu vừa khôi phục.
+    4. Push commit mới lên GitHub (nếu dự án đã có ``repo_url``).
+    5. Tạo version mới (Append-only), giữ nguyên toàn bộ lịch sử cũ.
 
     - **AC1**: Giữ nguyên lịch sử cũ.
-    - **AC2**: Tạo version mới sao chép nội dung.
+    - **AC2**: Tạo version mới với commit SHA mới (nếu push thành công).
+    - **AC3**: Trả về ``warnings`` nếu không thể cập nhật GitHub/website.
     """
     try:
-        old_version = get_version_detail(project["id"], version_id)
-        if old_version is None:
-            raise ValueError(
-                f"Version {version_id} không tồn tại hoặc không thuộc project {project_id}"
-            )
-
-        old_ver_num = old_version["version_number"]
-
-        new_version = restore_version(
-            project_id=project["id"],
+        result = restore_project_version(
+            db=db,
+            project=project,
             version_id=version_id,
             created_by=current_user.get("id"),
         )
+        new_version = result["new_version"]
+        action = (
+            "Đã khôi phục nội dung"
+            if result.get("applied_to_project")
+            else "Đã tạo phiên bản khôi phục"
+        )
         return VersionRestoreResponse(
-            message=f"Đã khôi phục thành công từ phiên bản {old_ver_num}",
-            restored_from_version=old_ver_num,
-            new_version=VersionListItemResponse(**{
-                "id": new_version["id"],
-                "version_number": new_version["version_number"],
-                "change_summary": new_version.get("change_summary"),
-                "commit_sha": new_version.get("commit_sha"),
-                "created_by": new_version.get("created_by"),
-                "created_at": new_version["created_at"],
-            }),
+            message=(
+                f"{action} từ phiên bản {result['restored_from_version']}, "
+                f"tạo phiên bản v{new_version['version_number']}."
+            ),
+            restored_from_version=result["restored_from_version"],
+            new_version=VersionListItemResponse.model_validate(new_version),
+            commit_sha=result.get("commit_sha"),
+            github_pages_url=result.get("github_pages_url"),
+            warnings=result.get("warnings") or [],
+            restored_fields=result.get("restored_fields") or [],
+            applied_to_project=bool(result.get("applied_to_project")),
         )
 
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(exc),
+        )
+
+    except pymysql.IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Trùng lặp version_number khi khôi phục. Vui lòng thử lại.",
         )

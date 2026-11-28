@@ -45,8 +45,11 @@ def _next_version_number(cursor: DictCursor, project_id: int) -> int:
 
 
 def _require_project(cursor: DictCursor, project_id: int) -> dict:
-    """Trả về project row hoặc raise ValueError nếu không tồn tại."""
-    cursor.execute("SELECT * FROM projects WHERE id = %s", (project_id,))
+    """Trả về project row hoặc raise ValueError nếu không tồn tại/đã xoá mềm."""
+    cursor.execute(
+        "SELECT * FROM projects WHERE id = %s AND deleted_at IS NULL",
+        (project_id,),
+    )
     project = cursor.fetchone()
     if project is None:
         raise ValueError(f"Project {project_id} không tồn tại")
@@ -132,11 +135,14 @@ def list_versions(project_id: int) -> list[dict]:
 
             cursor.execute(
                 """
-                SELECT id, version_number, change_summary, commit_sha,
-                       created_by, created_at
-                FROM project_versions
-                WHERE project_id = %s
-                ORDER BY version_number DESC
+                SELECT pv.id, pv.version_number, pv.change_summary, pv.commit_sha,
+                       pv.created_by, pv.created_at,
+                       u.full_name AS created_by_name,
+                       u.email AS created_by_email
+                FROM project_versions pv
+                LEFT JOIN users u ON u.id = pv.created_by
+                WHERE pv.project_id = %s
+                ORDER BY pv.version_number DESC
                 """,
                 (project_id,),
             )
@@ -156,11 +162,14 @@ def get_version_detail(project_id: int, version_id: int) -> dict | None:
         with conn.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT id, project_id, version_number, json_content,
-                       html_snapshot, commit_sha, change_summary,
-                       created_by, created_at
-                FROM project_versions
-                WHERE id = %s AND project_id = %s
+                SELECT pv.id, pv.project_id, pv.version_number, pv.json_content,
+                       pv.html_snapshot, pv.commit_sha, pv.change_summary,
+                       pv.created_by, pv.created_at,
+                       u.full_name AS created_by_name,
+                       u.email AS created_by_email
+                FROM project_versions pv
+                LEFT JOIN users u ON u.id = pv.created_by
+                WHERE pv.id = %s AND pv.project_id = %s
                 """,
                 (version_id, project_id),
             )
@@ -182,6 +191,11 @@ def restore_version(
     created_by: int | None = None,
 ) -> dict:
     """Khôi phục phiên bản cũ bằng cách tạo version mới sao chép snapshot.
+
+    .. note::
+       API ``POST .../restore`` dùng ``services.version_restore_service`` để
+       áp dụng snapshot lên bảng ``projects`` và GitHub. Hàm này chỉ copy
+       snapshot thuần, giữ lại cho tương thích ngược.
 
     Cơ chế Append-only: không xoá hay sửa bản ghi cũ mà tạo bản ghi mới
     với nội dung giống version_id cũ, change_summary ghi rõ nguồn gốc.

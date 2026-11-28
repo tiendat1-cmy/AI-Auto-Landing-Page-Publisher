@@ -33,6 +33,8 @@ class VersionListItemResponse(BaseModel):
     change_summary: Optional[str] = None
     commit_sha: Optional[str] = None
     created_by: Optional[int] = None
+    created_by_name: Optional[str] = None
+    created_by_email: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -53,3 +55,8 @@ class VersionRestoreResponse(BaseModel):
     message: str
     restored_from_version: int
     new_version: VersionListItemResponse
+    commit_sha: Optional[str] = None
+    github_pages_url: Optional[str] = None
+    warnings: list[str] = Field(default_factory=list)
+    restored_fields: list[str] = Field(default_factory=list)
+    applied_to_project: bool = False

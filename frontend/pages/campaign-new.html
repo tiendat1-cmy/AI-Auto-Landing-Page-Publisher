@@ -8,7 +8,10 @@
 </head>
 <body class="bg-slate-50 min-h-screen">
 <main class="max-w-xl mx-auto p-6">
-  <h1 class="text-xl font-bold text-slate-800 mb-4">Tạo chiến dịch mới</h1>
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl font-bold text-slate-800">Tạo chiến dịch mới</h1>
+    <a href="create.html" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 hover:underline">Tạo bằng AI</a>
+  </div>
   <form id="f" novalidate class="space-y-4 bg-white p-5 rounded-xl border border-slate-200"></form>
   <div id="msg" class="mt-4 text-sm"></div>
 </main>
@@ -26,7 +29,12 @@ const FIELDS = [
   { name: "color_theme", label: "Tông màu", type: "color" },
   { name: "facebook_url", label: "Link Facebook", type: "text" },
   { name: "tiktok_url", label: "Link TikTok", type: "text" },
-  { name: "instagram_url", label: "Link Instagram", type: "text" },
+  { name: "instagram_url", label: "Link Instagram (trang cá nhân)", type: "text" },
+  { name: "messenger_link", label: "Messenger (link hoặc username)", type: "text" },
+  { name: "tiktok_shop_link", label: "Link TikTok Shop (nút mua hàng)", type: "text" },
+  { name: "zalo_link", label: "Zalo (link hoặc số điện thoại)", type: "text" },
+  { name: "instagram_link", label: "Instagram nút liên hệ (link hoặc username)", type: "text" },
+  { name: "hotline", label: "Hotline", type: "text" },
 ];
 const SOCIAL = {
   facebook_url: ["facebook.com", "fb.com"],
@@ -37,12 +45,13 @@ const INPUT = "w-full px-3 py-2 rounded-lg border border-slate-300 text-sm";
 
 const form = document.getElementById("f");
 form.innerHTML =
-  `<label class="block text-sm font-semibold">Mẫu giao diện *
+  `<div><label class="block text-sm font-semibold">Mẫu giao diện *
     <select id="template_id" class="${INPUT} mt-1">
         <option value="1">Mẫu Bán Hàng (Sales)</option>
         <option value="2">Mẫu Marketing Sản Phẩm</option>
         <option value="3">Mẫu Sự Kiện (Event)</option>
-    </select></label>` +
+    </select></label>
+    <p id="err_template_id" class="text-xs text-rose-600 mt-1"></p></div>` +
   FIELDS.map(f => {
     const el = f.type === "textarea"
       ? `<textarea id="${f.name}" rows="3" class="${INPUT} mt-1"></textarea>`
@@ -54,9 +63,9 @@ form.innerHTML =
 
 function checkUrl(name, v) {
   if (!v) return "";
+  if (!/^https?:\/\//i.test(v)) return "Link phải bắt đầu bằng http:// hoặc https://";
   let u;
   try { u = new URL(v); } catch { return "Link không hợp lệ."; }
-  if (u.protocol !== "http:" && u.protocol !== "https:") return "Link phải bắt đầu bằng http:// hoặc https://";
   const d = SOCIAL[name];
   if (d && !d.some(x => u.hostname === x || u.hostname.endsWith("." + x))) return "Link phải thuộc " + d[0];
   return "";
@@ -68,13 +77,65 @@ function validate(v) {
   else if (v.campaign_name.length > 255) e.campaign_name = "Tối đa 255 ký tự.";
   if (!v.product_name) e.product_name = "Vui lòng nhập tên sản phẩm.";
   else if (v.product_name.length > 255) e.product_name = "Tối đa 255 ký tự.";
-  if (v.product_description.length > 5000) e.product_description = "Tối đa 5000 ký tự.";
+  if (v.product_description && v.product_description.length > 5000) e.product_description = "Tối đa 5000 ký tự.";
   if (v.price !== "" && (isNaN(Number(v.price)) || Number(v.price) < 0)) e.price = "Giá phải là số không âm.";
-  if (!/^#[0-9a-fA-F]{6}$/.test(v.color_theme)) e.color_theme = "Tông màu phải dạng #RRGGBB.";
-  for (const k of ["image_url", "facebook_url", "tiktok_url", "instagram_url"]) {
-    const m = checkUrl(k, v[k]);
-    if (m) e[k] = m;
+  if (v.color_theme && !/^#[0-9a-fA-F]{6}$/.test(v.color_theme)) e.color_theme = "Tông màu phải dạng #RRGGBB.";
+
+  // 1. Nhóm kiểm tra nghiêm: image_url, facebook_url, tiktok_url, instagram_url. Giới hạn 500 ký tự.
+  const strictLinks = ["image_url", "facebook_url", "tiktok_url", "instagram_url"];
+  for (const k of strictLinks) {
+    if (v[k] && v[k].length > 500) {
+      e[k] = "Tối đa 500 ký tự.";
+    } else {
+      const m = checkUrl(k, v[k]);
+      if (m) e[k] = m;
+    }
   }
+
+  // 2. messenger_link và instagram_link: cho nhập tự do (URL, @username hoặc username), chỉ kiểm tra tối đa 500 ký tự. Không bắt buộc http.
+  for (const k of ["messenger_link", "instagram_link"]) {
+    if (v[k] && v[k].length > 500) {
+      e[k] = "Tối đa 500 ký tự.";
+    }
+  }
+
+  // 3. zalo_link: tối đa 500 ký tự; hợp lệ nếu chứa "zalo.me" HOẶC là số điện thoại VN: sau khi bỏ khoảng trắng, dấu chấm, gạch ngang, ngoặc thì khớp /^(\+84|84|0)\d{8,11}$/. Ngược lại báo "Nhập link zalo.me hoặc số điện thoại hợp lệ."
+  if (v.zalo_link) {
+    if (v.zalo_link.length > 500) {
+      e.zalo_link = "Tối đa 500 ký tự.";
+    } else {
+      const hasZaloMe = v.zalo_link.toLowerCase().includes("zalo.me");
+      const cleanPhone = v.zalo_link.replace(/[\s.\-()]/g, "");
+      const isPhone = /^(\+84|84|0)\d{8,11}$/.test(cleanPhone);
+      if (!hasZaloMe && !isPhone) {
+        e.zalo_link = "Nhập link zalo.me hoặc số điện thoại hợp lệ.";
+      }
+    }
+  }
+
+  // 4. tiktok_shop_link: tối đa 500 ký tự; phải chứa tiktok.com hoặc tiktokshop.com (không phân biệt hoa thường, có hoặc không có http). Ngược lại báo "Link phải thuộc tiktok.com hoặc tiktokshop.com."
+  if (v.tiktok_shop_link) {
+    if (v.tiktok_shop_link.length > 500) {
+      e.tiktok_shop_link = "Tối đa 500 ký tự.";
+    } else {
+      const lower = v.tiktok_shop_link.toLowerCase();
+      if (!lower.includes("tiktok.com") && !lower.includes("tiktokshop.com")) {
+        e.tiktok_shop_link = "Link phải thuộc tiktok.com hoặc tiktokshop.com.";
+      }
+    }
+  }
+
+  if (v.hotline) {
+    if (v.hotline.length > 50) {
+      e.hotline = "Tối đa 50 ký tự.";
+    } else {
+      const cleanDigits = v.hotline.replace(/[^\d+]/g, "");
+      if (v.hotline === "#" || v.hotline === "/" || !cleanDigits || !/^[\d\s.\-+()]+$/.test(v.hotline)) {
+        e.hotline = "Hotline không hợp lệ.";
+      }
+    }
+  }
+
   return e;
 }
 
@@ -82,12 +143,18 @@ form.addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const msg = document.getElementById("msg");
   msg.textContent = "";
+  msg.className = "mt-4 text-sm";
   const v = {};
   FIELDS.forEach(f => v[f.name] = document.getElementById(f.name).value.trim());
   FIELDS.forEach(f => document.getElementById("err_" + f.name).textContent = "");
+  const errTemplate = document.getElementById("err_template_id");
+  if (errTemplate) errTemplate.textContent = "";
 
   const errs = validate(v);
-  for (const k in errs) document.getElementById("err_" + k).textContent = errs[k];
+  for (const k in errs) {
+    const el = document.getElementById("err_" + k);
+    if (el) el.textContent = errs[k];
+  }
   if (Object.keys(errs).length) return;
 
   const body = { template_id: Number(document.getElementById("template_id").value) };
@@ -102,10 +169,39 @@ form.addEventListener("submit", async (ev) => {
     msg.className = "mt-4 text-sm text-emerald-700";
     msg.textContent = "Tạo chiến dịch thành công, mã: " + res.data.id;
     form.reset();
-    setTimeout(() => { window.location.href = "projects.html"; }, 1200);
+    setTimeout(() => { window.location.href = "project-detail.html?id=" + res.data.id; }, 1200);
   } catch (err) {
-    msg.className = "mt-4 text-sm text-rose-600";
-    msg.textContent = err.message;
+    const rawMsg = (err && err.message) ? err.message : "Đã xảy ra lỗi khi tạo chiến dịch.";
+    const parts = rawMsg.split(";").map(s => s.trim()).filter(Boolean);
+    let matchedField = false;
+    parts.forEach(part => {
+      const idx = part.indexOf(":");
+      if (idx > 0) {
+        const fieldName = part.slice(0, idx).trim();
+        const errorText = part.slice(idx + 1).trim();
+        const errEl = document.getElementById("err_" + fieldName);
+        if (errEl) {
+          errEl.textContent = errorText;
+          matchedField = true;
+        }
+      }
+    });
+
+    if (!matchedField) {
+      const wrapped = rawMsg.match(/\(([a-zA-Z0-9_]+):\s*([^)]+)\)/);
+      if (wrapped) {
+        const errEl = document.getElementById("err_" + wrapped[1]);
+        if (errEl) {
+          errEl.textContent = wrapped[2].trim();
+          matchedField = true;
+        }
+      }
+    }
+
+    if (!matchedField) {
+      msg.className = "mt-4 text-sm text-rose-600";
+      msg.textContent = rawMsg;
+    }
   } finally {
     btn.disabled = false;
   }

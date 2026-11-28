@@ -731,9 +731,9 @@ def deploy_project(
         db.commit()
 
         repo_url = project.get("repo_url")
-        if repo_url:
-            parts = repo_url.rstrip("/").split("/")
-            owner, repo_name = parts[-2], parts[-1]
+        repo_info_parsed = github_service.parse_repo_info(repo_url) if repo_url else None
+        if repo_info_parsed:
+            owner, repo_name = repo_info_parsed
         else:
             raw_title = project.get("campaign_name") or project.get("product_name") or ""
             slug = _slugify_vietnamese(raw_title)
@@ -754,11 +754,28 @@ def deploy_project(
         )
         db.commit()
 
+        # Đóng gói ảnh upload nội bộ (nếu có) để hiển thị được trên GitHub Pages
+        deploy_images: list[dict] = []
+        image_url = project.get("image_url") or ""
+        if isinstance(image_url, str) and "/static/uploads/" in image_url:
+            upload_filename = Path(image_url.split("?", 1)[0]).name
+            local_img_path = Path(__file__).resolve().parent.parent / "static" / "uploads" / upload_filename
+            if upload_filename and local_img_path.is_file():
+                deploy_images.append({
+                    "path": f"images/{upload_filename}",
+                    "content": local_img_path.read_bytes(),
+                })
+                html_content = re.sub(
+                    rf"(?:https?://[^/\"']+)?/static/uploads/{re.escape(upload_filename)}",
+                    f"images/{upload_filename}",
+                    html_content,
+                )
+
         push_result = push_landing_page_assets(
             owner=owner,
             repo_name=repo_name,
             html_content=html_content,
-            images=None,
+            images=deploy_images or None,
         )
         commit_sha = push_result.get("commit_sha") or "latest"
 

@@ -27,6 +27,30 @@
 
   const $ = (id) => document.getElementById(id);
 
+  function escapeHtml(value) {
+    const div = document.createElement("div");
+    div.appendChild(document.createTextNode(value === null || value === undefined ? "" : String(value)));
+    return div.innerHTML;
+  }
+
+  function notify(message, type = "info", title = "") {
+    if (typeof window.showToast === "function") {
+      window.showToast(message, type, title);
+      return;
+    }
+    const palette = {
+      success: "bg-emerald-600 text-white",
+      error: "bg-rose-600 text-white",
+      warning: "bg-amber-500 text-white",
+      info: "bg-slate-800 text-white",
+    };
+    const toast = document.createElement("div");
+    toast.className = `fixed bottom-5 right-5 z-50 max-w-sm px-4 py-3 rounded-xl shadow-lg text-xs font-semibold ${palette[type] || palette.info}`;
+    toast.textContent = title ? `${title}: ${message}` : message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+
   function getProjectIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get("project_id") || params.get("id") || "";
@@ -167,10 +191,10 @@
     $("error-panel")?.classList.toggle("hidden", !error);
     $("retry-btn")?.classList.toggle("hidden", !error);
     $("visit-site-btn")?.classList.toggle("hidden", !success);
-    $("view-deployments-btn")?.classList.toggle("hidden", !success);
+    $("view-deployments-btn")?.classList.toggle("hidden", !success && !error);
   }
 
-  function handleDeploySuccess(pagesUrl) {
+  function handleDeploySuccess(pagesUrl, deployData = {}) {
     stopTimers();
     for (let i = 1; i <= TOTAL_STEPS; i++) setStepState(i, "done");
     updateProgressUI(100, "Hoàn tất xuất bản 100%");
@@ -200,6 +224,25 @@
       historyBtn.href = `deployments.html${state.projectId ? `?project_id=${encodeURIComponent(state.projectId)}` : ""}`;
     }
 
+    const commitSha = String(deployData.commit_sha || "").trim();
+    const repoUrl = String(deployData.repo_url || "").trim();
+    const metaRow = $("deploy-meta-row");
+    const commitWrap = $("deploy-commit-wrap");
+    const commitEl = $("deploy-commit-sha");
+    const repoLink = $("deploy-repo-link");
+    if (commitSha && commitWrap && commitEl) {
+      commitEl.textContent = commitSha.slice(0, 7);
+      commitWrap.title = commitSha;
+      commitWrap.classList.remove("hidden");
+    }
+    if (repoUrl && repoLink) {
+      repoLink.href = repoUrl;
+      repoLink.classList.remove("hidden");
+    }
+    if (metaRow && (commitSha || repoUrl)) {
+      metaRow.classList.remove("hidden");
+    }
+
     showResultPanels({ success: true, error: false });
     try {
       sessionStorage.setItem(
@@ -213,7 +256,7 @@
     } catch (error) {
       /* sessionStorage có thể bị chặn – không ảnh hưởng luồng chính */
     }
-    window.showToast?.("Xuất bản Landing Page thành công!", "success", "Hoàn tất");
+    notify("Xuất bản Landing Page thành công!", "success", "Hoàn tất");
   }
 
   function handleDeployError(message) {
@@ -250,11 +293,11 @@
     }
 
     if (errorText) {
-      errorText.innerHTML = `<span>${message || ""}</span>${friendlyHint}`;
+      errorText.innerHTML = `<span>${escapeHtml(message || "")}</span>${friendlyHint}`;
     }
 
     showResultPanels({ success: false, error: true });
-    window.showToast?.(message, "error", "Deploy thất bại");
+    notify(message, "error", "Deploy thất bại");
   }
 
   function resetDeployUI() {
@@ -318,16 +361,16 @@
         method: "POST",
       });
 
+      const deployData = result?.data || result || {};
       const pagesUrl =
-        result?.data?.github_pages_url ||
-        result?.github_pages_url ||
+        deployData.github_pages_url ||
         "";
 
       if (!pagesUrl) {
         throw new Error("Backend không trả về đường dẫn GitHub Pages sau khi deploy.");
       }
 
-      handleDeploySuccess(pagesUrl);
+      handleDeploySuccess(pagesUrl, deployData);
     } catch (error) {
       console.error("Lỗi deploy:", error);
       handleDeployError(error.message || "Máy chủ trả về lỗi khi xuất bản.");
@@ -360,7 +403,7 @@
             copyBtn.innerHTML = '<i class="fa-regular fa-copy mr-1"></i>Sao chép';
           }, 2000);
         } catch (error) {
-          window.showToast?.("Trình duyệt không cho phép sao chép tự động.", "warning", "Sao chép");
+          notify("Trình duyệt không cho phép sao chép tự động.", "warning", "Sao chép");
         }
       });
     }

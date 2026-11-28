@@ -47,6 +47,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept"],
+    expose_headers=["X-GitHub-Error", "Retry-After"],
 )
 
 
@@ -76,7 +77,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         payload = exc.detail
         if isinstance(payload.get("error"), dict) and "message" in payload["error"]:
             payload["error"]["message"] = _sanitize_error_text(str(payload["error"]["message"]))
-        return JSONResponse(status_code=exc.status_code, content=payload)
+        return JSONResponse(status_code=exc.status_code, content=payload, headers=exc.headers)
 
     friendly_msg = _sanitize_error_text(str(exc.detail or "Yêu cầu không hợp lệ."))
     return JSONResponse(
@@ -90,6 +91,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
                 "details": [],
             },
         },
+        headers=exc.headers,
     )
 
 

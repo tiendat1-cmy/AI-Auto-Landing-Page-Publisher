@@ -26,44 +26,88 @@ logger = logging.getLogger(__name__)
 PLACEHOLDER_TOKEN = "your_github_personal_access_token_here"
 
 
-# ---------------------------------------------------------------------------
-# Custom exceptions – giúp caller phân biệt rõ từng loại lỗi GitHub
-# ---------------------------------------------------------------------------
-class GitHubRateLimitError(RuntimeError):
-    """GitHub API đã đạt giới hạn tốc độ (rate limit). Vui lòng thử lại sau."""
+class GitHubAuthError(RuntimeError):
+    """Lỗi xác thực GitHub Token (thiếu, không hợp lệ hoặc hết hạn)."""
 
-    def __init__(self, retry_after: int = 60):
+
+class GitHubRateLimitError(RuntimeError):
+    """Lỗi vượt quá giới hạn tốc độ (rate limit) của GitHub API."""
+
+    def __init__(self, message: str, retry_after: int = 60):
+        super().__init__(message)
         self.retry_after = retry_after
-        super().__init__(
-            f"GitHub API đang bị giới hạn tốc độ. "
-            f"Vui lòng thử lại sau {retry_after} giây."
-        )
 
 
 class GitHubRepoDuplicateError(RuntimeError):
-    """Tên repository đã tồn tại trên tài khoản GitHub."""
+    """Lỗi tên repository đã tồn tại trên tài khoản GitHub."""
 
-    def __init__(self, repo_name: str):
-        self.repo_name = repo_name
-        super().__init__(
-            f"Tên repository \"{repo_name}\" đã tồn tại trên tài khoản GitHub của bạn. "
-            "Vui lòng đổi tên chiến dịch hoặc xóa repo cũ trước khi deploy lại."
+
+def _extract_github_error_detail(response: requests.Response) -> str:
+    try:
+        payload = response.json()
+        if isinstance(payload, dict):
+            msg = payload.get("message") or ""
+            errors = payload.get("errors")
+            if isinstance(errors, list) and errors:
+                first_err = errors[0]
+                if isinstance(first_err, dict) and first_err.get("message"):
+                    return f"{msg}: {first_err['message']}" if msg else str(first_err["message"])
+            if msg:
+                return str(msg)
+    except ValueError:
+        pass
+    return (response.text or "").strip()[:300] or f"HTTP {response.status_code}"
+
+
+def _parse_retry_after(response: requests.Response) -> int:
+    retry_after = response.headers.get("Retry-After")
+    if retry_after and str(retry_after).isdigit():
+        return max(1, int(retry_after))
+    reset_at = response.headers.get("X-RateLimit-Reset")
+    if reset_at and str(reset_at).isdigit():
+        import time
+
+        return max(1, int(reset_at) - int(time.time()))
+    return 60
+
+
+def _raise_github_api_error(
+    response: requests.Response,
+    action: str,
+    check_duplicate: bool = False,
+) -> None:
+    """Chuyển lỗi HTTP từ GitHub API thành exception nghiệp vụ thân thiện."""
+    detail = _extract_github_error_detail(response)
+    lower_detail = detail.lower()
+    status_code = response.status_code
+
+    if status_code == 401 or (
+        status_code == 403 and ("bad credentials" in lower_detail or "token" in lower_detail)
+    ):
+        raise GitHubAuthError(
+            "GITHUB_TOKEN không hợp lệ hoặc đã hết hạn. Vui lòng cập nhật lại trong backend/.env."
         )
 
-
-class GitHubAuthError(RuntimeError):
-    """Token GitHub không hợp lệ hoặc đã hết hạn."""
-
-    def __init__(self):
-        super().__init__(
-            "Token GitHub không hợp lệ hoặc đã hết hạn. "
-            "Vui lòng cập nhật GITHUB_TOKEN hợp lệ trong cài đặt."
+    remaining = response.headers.get("X-RateLimit-Remaining")
+    if status_code == 429 or (
+        status_code == 403 and (remaining == "0" or "rate limit" in lower_detail or "abuse" in lower_detail)
+    ):
+        retry_after = _parse_retry_after(response)
+        raise GitHubRateLimitError(
+            f"GitHub API đang bị giới hạn tốc độ (rate limit). Vui lòng thử lại sau {retry_after} giây.",
+            retry_after=retry_after,
         )
 
+    if check_duplicate and status_code == 422 and (
+        "already exists" in lower_detail or "name already exists" in lower_detail
+    ):
+        raise GitHubRepoDuplicateError(
+            "Tên repository đã tồn tại trên GitHub. Vui lòng đổi tên chiến dịch rồi thử lại."
+        )
 
-# ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
+    raise RuntimeError(f"{action} thất bại ({status_code}): {detail}")
+
+
 def _resolve_token(token: Optional[str] = None) -> Optional[str]:
     """Trả về token GitHub hợp lệ hoặc None nếu chưa cấu hình."""
     value = token or GITHUB_TOKEN
@@ -80,64 +124,22 @@ def _github_headers(token: str) -> dict:
     }
 
 
-def _get_headers(token: Optional[str] = None) -> dict:
-    resolved_token = _resolve_token(token)
-    if not resolved_token:
-        raise ValueError("GITHUB_TOKEN chưa được cấu hình hợp lệ trong file backend/.env")
-    return _github_headers(resolved_token)
-
-
-def _raise_for_github_error(response: requests.Response, repo_name: str = "") -> None:
-    """
-    Kiểm tra response từ GitHub API và ném exception thân thiện theo từng loại lỗi.
-    Gọi hàm này SAU khi đã xử lý status_code thành công (2xx).
-    """
-    status_code = response.status_code
-
-    # 401 – Token không hợp lệ hoặc hết hạn
-    if status_code == 401:
-        raise GitHubAuthError()
-
-    # 403 – Có thể là rate limit hoặc forbidden
-    if status_code == 403:
-        remaining = response.headers.get("X-RateLimit-Remaining", "1")
-        if remaining == "0":
-            reset_ts = int(response.headers.get("X-RateLimit-Reset", time.time() + 60))
-            wait = max(1, reset_ts - int(time.time()))
-            raise GitHubRateLimitError(retry_after=wait)
-        msg = response.json().get("message", response.text)
-        raise RuntimeError(f"GitHub từ chối yêu cầu (403): {msg}")
-
-    # 429 – Secondary rate limit
-    if status_code == 429:
-        retry_after = int(response.headers.get("Retry-After", 60))
-        raise GitHubRateLimitError(retry_after=retry_after)
-
-    # 422 – Validation failed (thường do repo đã tồn tại)
-    if status_code == 422:
-        body = response.json()
-        errors = body.get("errors", [])
-        for err in errors:
-            if isinstance(err, dict) and "already exists" in err.get("message", "").lower():
-                raise GitHubRepoDuplicateError(repo_name=repo_name)
-        top_msg = body.get("message", "")
-        if "already exists" in top_msg.lower():
-            raise GitHubRepoDuplicateError(repo_name=repo_name)
-        raise RuntimeError(f"GitHub trả lỗi validation (422): {top_msg}")
+def _get_headers() -> dict:
+    if not GITHUB_TOKEN or GITHUB_TOKEN == PLACEHOLDER_TOKEN:
+        raise GitHubAuthError("GITHUB_TOKEN chưa được cấu hình hợp lệ trong file backend/.env")
+    return _github_headers(GITHUB_TOKEN)
 
 
 def create_github_repo(
     repo_name: str,
     description: str = "Landing page generated by AI Auto Landing Page Publisher",
     private: bool = False,
-    token: Optional[str] = None,
-    max_retries: int = 2,
 ) -> dict:
     """
     Gọi GitHub API để tạo một repository mới.
-    Tự động thử lại khi bị rate limit (tối đa max_retries lần).
+    Trả về dict chứa thông tin repo (name, full_name, html_url, clone_url, default_branch).
     """
-    headers = _get_headers(token)
+    headers = _get_headers()
     url = f"{GITHUB_API_URL}/user/repos"
     payload = {
         "name": repo_name,
@@ -146,32 +148,22 @@ def create_github_repo(
         "auto_init": True,
     }
 
-    attempt = 0
-    while True:
+    try:
         response = requests.post(url, json=payload, headers=headers, timeout=15)
+    except requests.RequestException as exc:
+        raise RuntimeError(f"Không kết nối được GitHub API để tạo repository: {exc}") from exc
 
-        if response.status_code == 201:
-            data = response.json()
-            return {
-                "name": data.get("name"),
-                "full_name": data.get("full_name"),
-                "html_url": data.get("html_url"),
-                "clone_url": data.get("clone_url"),
-                "default_branch": data.get("default_branch", "main"),
-            }
+    if response.status_code == 201:
+        data = response.json()
+        return {
+            "name": data.get("name"),
+            "full_name": data.get("full_name"),
+            "html_url": data.get("html_url"),
+            "clone_url": data.get("clone_url"),
+            "default_branch": data.get("default_branch", "main"),
+        }
 
-        try:
-            _raise_for_github_error(response, repo_name=repo_name)
-        except GitHubRateLimitError as e:
-            if attempt >= max_retries:
-                raise
-            attempt += 1
-            wait = min(e.retry_after, 60)
-            time.sleep(wait)
-            continue
-
-        error_detail = response.json().get("message", response.text)
-        raise RuntimeError(f"Tạo GitHub repo thất bại ({response.status_code}): {error_detail}")
+    _raise_github_api_error(response, "Tạo GitHub repo", check_duplicate=True)
 
 
 def upload_file_to_repo(
@@ -181,32 +173,37 @@ def upload_file_to_repo(
     content: str | bytes,
     commit_message: str = "Upload landing page asset",
     branch: str = "main",
-    token: Optional[str] = None,
 ) -> dict:
     """
     Đẩy 1 file (index.html dạng str hoặc ảnh dạng bytes) lên repo qua GitHub Contents API.
     Tự động lấy sha nếu file đã tồn tại để ghi đè.
     """
-    headers = _get_headers(token)
+    headers = _get_headers()
     url = f"{GITHUB_API_URL}/repos/{owner}/{repo_name}/contents/{file_path.lstrip('/')}"
 
     raw_bytes = content.encode("utf-8") if isinstance(content, str) else content
     encoded_content = base64.b64encode(raw_bytes).decode("utf-8")
 
     sha = None
-    check_res = requests.get(url, headers=headers, params={"ref": branch}, timeout=15)
-    if check_res.status_code == 200:
-        sha = check_res.json().get("sha")
+    try:
+        check_res = requests.get(url, headers=headers, params={"ref": branch}, timeout=15)
+        if check_res.status_code == 200:
+            sha = check_res.json().get("sha")
+        elif check_res.status_code != 404:
+            _raise_github_api_error(check_res, f"Kiểm tra file '{file_path}'")
 
-    payload = {
-        "message": commit_message,
-        "content": encoded_content,
-        "branch": branch,
-    }
-    if sha:
-        payload["sha"] = sha
+        payload = {
+            "message": commit_message,
+            "content": encoded_content,
+            "branch": branch,
+        }
+        if sha:
+            payload["sha"] = sha
 
-    response = requests.put(url, json=payload, headers=headers, timeout=20)
+        response = requests.put(url, json=payload, headers=headers, timeout=20)
+    except requests.RequestException as exc:
+        raise RuntimeError(f"Không kết nối được GitHub API khi đẩy file '{file_path}': {exc}") from exc
+
     if response.status_code in (200, 201):
         data = response.json()
         return {
@@ -215,9 +212,7 @@ def upload_file_to_repo(
             "html_url": data.get("content", {}).get("html_url"),
         }
 
-    _raise_for_github_error(response, repo_name=repo_name)
-    error_detail = response.json().get("message", response.text)
-    raise RuntimeError(f"Push file '{file_path}' thất bại ({response.status_code}): {error_detail}")
+    _raise_github_api_error(response, f"Push file '{file_path}'")
 
 
 def push_landing_page_assets(
@@ -226,7 +221,6 @@ def push_landing_page_assets(
     html_content: str,
     images: list[dict] | None = None,
     branch: str = "main",
-    token: Optional[str] = None,
 ) -> dict:
     """
     Đẩy file index.html và danh sách ảnh (nếu có) lên repository vừa tạo.
@@ -243,7 +237,6 @@ def push_landing_page_assets(
             content=img["content"],
             commit_message=f"Add asset {img['path']}",
             branch=branch,
-            token=token,
         )
         uploaded_files.append(res["path"])
         latest_commit_sha = res["commit_sha"]
@@ -255,7 +248,6 @@ def push_landing_page_assets(
         content=html_content,
         commit_message="Deploy index.html landing page",
         branch=branch,
-        token=token,
     )
     uploaded_files.append(html_res["path"])
     latest_commit_sha = html_res["commit_sha"]
@@ -271,12 +263,11 @@ def enable_github_pages(
     repo_name: str,
     branch: str = "main",
     path: str = "/",
-    token: Optional[str] = None,
 ) -> str:
     """
     Gọi API bật GitHub Pages cho repository và trả về URL chuẩn dạng https://username.github.io/repo-name
     """
-    headers = _get_headers(token)
+    headers = _get_headers()
     url = f"{GITHUB_API_URL}/repos/{owner}/{repo_name}/pages"
     payload = {
         "source": {
@@ -285,91 +276,17 @@ def enable_github_pages(
         }
     }
 
-    response = requests.post(url, json=payload, headers=headers, timeout=15)
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=15)
+    except requests.RequestException as exc:
+        raise RuntimeError(f"Không kết nối được GitHub API để bật GitHub Pages: {exc}") from exc
 
     # 201: Bật thành công | 409: Pages đã được bật từ trước
     if response.status_code in (201, 409):
         pages_url = f"https://{owner.lower()}.github.io/{repo_name}"
         return pages_url
 
-    error_detail = response.json().get("message", response.text)
-    raise RuntimeError(f"Bật GitHub Pages thất bại ({response.status_code}): {error_detail}")
-
-
-def get_github_pages_build_status(owner: str, repo_name: str, token: Optional[str] = None) -> dict:
-    """
-    Gọi GitHub API kiểm tra trạng thái build mới nhất của GitHub Pages.
-    Endpoint: GET /repos/{owner}/{repo}/pages/builds/latest
-    """
-    resolved_token = _resolve_token(token)
-    if not resolved_token:
-        return {
-            "status": "built",
-            "html_url": f"https://{owner.lower()}.github.io/{repo_name}/",
-            "error": None,
-        }
-
-    headers = _github_headers(resolved_token)
-
-    pages_res = requests.get(
-        f"{GITHUB_API_URL}/repos/{owner}/{repo_name}/pages",
-        headers=headers,
-        timeout=15,
-    )
-    html_url = f"https://{owner.lower()}.github.io/{repo_name}/"
-    if pages_res.status_code == 200:
-        html_url = pages_res.json().get("html_url") or html_url
-
-    build_res = requests.get(
-        f"{GITHUB_API_URL}/repos/{owner}/{repo_name}/pages/builds/latest",
-        headers=headers,
-        timeout=15,
-    )
-    if build_res.status_code == 404:
-        return {"status": "building", "html_url": html_url, "error": None}
-
-    build_res.raise_for_status()
-    build_data = build_res.json()
-    err_obj = build_data.get("error") or {}
-
-    return {
-        "status": build_data.get("status", "building"),
-        "html_url": html_url,
-        "error": err_obj.get("message") if isinstance(err_obj, dict) else None,
-    }
-
-
-def wait_for_github_pages_built(
-    owner: str,
-    repo_name: str,
-    token: Optional[str] = None,
-    timeout_seconds: int = 45,
-    poll_interval: float = 3.0,
-) -> dict:
-    """
-    Polling GitHub Pages API cho đến khi trạng thái là 'built' hoặc báo lỗi/hết thời gian chờ.
-    """
-    deadline = time.time() + timeout_seconds
-    last_info = {
-        "status": "building",
-        "html_url": f"https://{owner.lower()}.github.io/{repo_name}/",
-        "error": None,
-    }
-
-    while time.time() < deadline:
-        last_info = get_github_pages_build_status(owner=owner, repo_name=repo_name, token=token)
-        status_val = (last_info.get("status") or "").lower()
-
-        if status_val == "built":
-            return last_info
-        if status_val == "errored":
-            raise RuntimeError(
-                f"GitHub Pages build lỗi: {last_info.get('error') or 'Unknown build error'}"
-            )
-
-        time.sleep(poll_interval)
-
-    raise TimeoutError("Hết thời gian chờ GitHub Pages build xong. Vui lòng kiểm tra lại sau.")
+    _raise_github_api_error(response, "Bật GitHub Pages")
 
 
 def publish_and_save_project_url(
@@ -560,7 +477,15 @@ def delete_github_repo(
     repo_url: str,
     token: Optional[str] = None,
 ) -> dict:
-    """Xóa repository GitHub tương ứng với ``repo_url``."""
+    """Xóa repository GitHub tương ứng với ``repo_url``.
+
+    Trả về dict trạng thái thay vì raise với các trường hợp không cần chặn
+    nghiệp vụ xóa mềm (chưa cấu hình token, repo đã bị xóa trước đó).
+
+    Raises:
+        ValueError: ``repo_url`` rỗng hoặc không phải URL GitHub hợp lệ.
+        RuntimeError: GitHub API trả về lỗi không mong muốn.
+    """
     repo_info = parse_repo_info(repo_url)
     if repo_info is None:
         raise ValueError("repo_url không hợp lệ hoặc không phải repository GitHub")
@@ -622,3 +547,79 @@ def delete_github_repo(
 
 # Alias ngắn gọn cho các module khác dễ gọi.
 delete_repository = delete_github_repo
+
+
+def get_github_pages_build_status(owner: str, repo_name: str, token: Optional[str] = None) -> dict:
+    """
+    Gọi GitHub API kiểm tra trạng thái build mới nhất của GitHub Pages.
+    Endpoint: GET /repos/{owner}/{repo}/pages/builds/latest
+    """
+    resolved_token = _resolve_token(token)
+    if not resolved_token:
+        return {
+            "status": "built",
+            "html_url": f"https://{owner.lower()}.github.io/{repo_name}/",
+            "error": None,
+        }
+
+    headers = _github_headers(resolved_token)
+
+    pages_res = requests.get(
+        f"{GITHUB_API_URL}/repos/{owner}/{repo_name}/pages",
+        headers=headers,
+        timeout=15,
+    )
+    html_url = f"https://{owner.lower()}.github.io/{repo_name}/"
+    if pages_res.status_code == 200:
+        html_url = pages_res.json().get("html_url") or html_url
+
+    build_res = requests.get(
+        f"{GITHUB_API_URL}/repos/{owner}/{repo_name}/pages/builds/latest",
+        headers=headers,
+        timeout=15,
+    )
+    if build_res.status_code == 404:
+        return {"status": "building", "html_url": html_url, "error": None}
+
+    build_res.raise_for_status()
+    build_data = build_res.json()
+    err_obj = build_data.get("error") or {}
+
+    return {
+        "status": build_data.get("status", "building"),
+        "html_url": html_url,
+        "error": err_obj.get("message") if isinstance(err_obj, dict) else None,
+    }
+
+
+def wait_for_github_pages_built(
+    owner: str,
+    repo_name: str,
+    token: Optional[str] = None,
+    timeout_seconds: int = 45,
+    poll_interval: float = 3.0,
+) -> dict:
+    """
+    Polling GitHub Pages API cho đến khi trạng thái là 'built' hoặc báo lỗi/hết thời gian chờ.
+    """
+    deadline = time.time() + timeout_seconds
+    last_info = {
+        "status": "building",
+        "html_url": f"https://{owner.lower()}.github.io/{repo_name}/",
+        "error": None,
+    }
+
+    while time.time() < deadline:
+        last_info = get_github_pages_build_status(owner=owner, repo_name=repo_name, token=token)
+        status_val = (last_info.get("status") or "").lower()
+
+        if status_val == "built":
+            return last_info
+        if status_val == "errored":
+            raise RuntimeError(
+                f"GitHub Pages build lỗi: {last_info.get('error') or 'Unknown build error'}"
+            )
+
+        time.sleep(poll_interval)
+
+    raise TimeoutError("Hết thời gian chờ GitHub Pages build xong. Vui lòng kiểm tra lại sau.")

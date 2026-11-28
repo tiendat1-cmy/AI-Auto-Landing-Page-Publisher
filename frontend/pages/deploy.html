@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi" class="h-full bg-slate-50">
 <head>
   <meta charset="UTF-8" />
@@ -28,9 +28,14 @@
         <i class="fa-solid fa-rocket text-xl"></i>
         <span>AI Landing Publisher</span>
       </a>
-      <a href="projects.html" class="text-sm font-medium text-slate-500 hover:text-slate-800 transition">
-        <i class="fa-solid fa-arrow-left mr-1.5"></i>Quay lại danh sách dự án
-      </a>
+      <div class="flex items-center gap-4">
+        <a href="deployments.html" class="text-sm font-medium text-slate-500 hover:text-indigo-600 transition">
+          <i class="fa-solid fa-clock-rotate-left mr-1.5"></i>Lịch sử xuất bản
+        </a>
+        <a href="projects.html" class="text-sm font-medium text-slate-500 hover:text-slate-800 transition">
+          <i class="fa-solid fa-arrow-left mr-1.5"></i>Quay lại danh sách dự án
+        </a>
+      </div>
     </div>
   </header>
 
@@ -119,6 +124,19 @@
                   <i class="fa-regular fa-copy mr-1"></i>Sao chép
                 </button>
               </div>
+              <div id="deploy-meta-row" class="hidden mt-2.5 flex flex-wrap items-center gap-3 text-[11px] text-emerald-800">
+                <span id="deploy-commit-wrap" class="hidden inline-flex items-center gap-1 bg-white/80 border border-emerald-200 rounded-md px-2 py-0.5 font-mono">
+                  <i class="fa-solid fa-code-commit text-emerald-600"></i>
+                  <span id="deploy-commit-sha"></span>
+                </span>
+                <a id="deploy-repo-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1 text-indigo-700 hover:underline font-medium">
+                  <i class="fa-brands fa-github"></i>
+                  <span>Xem repository trên GitHub</span>
+                </a>
+              </div>
+              <p class="text-[11px] text-emerald-700/90 mt-2">
+                <i class="fa-solid fa-circle-info mr-1"></i>Lưu ý: GitHub Pages có thể mất khoảng 30–60 giây để khởi tạo lần đầu nếu trang vừa được tạo.
+              </p>
             </div>
           </div>
         </div>
